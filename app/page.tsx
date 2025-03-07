@@ -1,7 +1,8 @@
 import FeatureCards from '@/components/core/FeatureCards'
 import Header from '@/components/layout/Header'
-import { Button } from '@/components/ui/button'
 import { Cover } from '@/components/ui/cover'
+import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text'
+import { InteractiveHoverButton } from '@/components/magicui/interactive-hover-button'
 
 const Home = () => {
 	return (
@@ -12,7 +13,9 @@ const Home = () => {
 					<div className="mb-6 flex justify-center">
 						<div className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 inline-flex items-center shadow-sm">
 							<span className="mr-2">🚀</span>
-							<span>+1985 MCP Servers in list</span>
+							<AnimatedShinyText shimmerWidth={150}>
+								+1985 MCP Servers in list
+							</AnimatedShinyText>
 						</div>
 					</div>
 
@@ -28,9 +31,9 @@ const Home = () => {
 					</p>
 
 					<div className="flex justify-center">
-						<Button className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-medium px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+						<InteractiveHoverButton>
 							Become a Member
-						</Button>
+						</InteractiveHoverButton>
 					</div>
 				</div>
 			</main>
