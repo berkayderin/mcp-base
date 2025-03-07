@@ -1,5 +1,7 @@
+import FeatureCards from '@/components/core/FeatureCards'
 import Header from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
+import { Cover } from '@/components/ui/cover'
 
 const Home = () => {
 	return (
@@ -17,7 +19,7 @@ const Home = () => {
 					<h1 className="text-5xl md:text-7xl font-bold mb-6">
 						<span className="text-gray-900">Find Awesome </span>
 						<span className="bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
-							MCP Servers and Clients
+							MCP <Cover>Servers</Cover> and <Cover>Clients</Cover>
 						</span>
 					</h1>
 
@@ -32,6 +34,7 @@ const Home = () => {
 					</div>
 				</div>
 			</main>
+			<FeatureCards />
 		</div>
 	)
 }
