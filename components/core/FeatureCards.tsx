@@ -268,7 +268,7 @@ const InfiniteMovingCards = ({
 
 const FeatureCards = () => {
 	return (
-		<div className="w-full space-y-16 py-12 flex flex-col items-center bg-gray-50">
+		<div className="w-full space-y-16 py-12 flex flex-col items-center bg-gray-50 border-t border-slate-200">
 			<div className="space-y-8 w-full max-w-7xl">
 				<div className="flex items-center justify-between px-6">
 					<h2 className="text-2xl font-bold text-gray-900">

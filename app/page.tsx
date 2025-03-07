@@ -1,9 +1,11 @@
 import FeatureCards from '@/components/core/FeatureCards'
+import Faqs from '@/components/core/Faqs'
 import Header from '@/components/layout/Header'
 import { Cover } from '@/components/ui/cover'
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text'
 import { InteractiveHoverButton } from '@/components/magicui/interactive-hover-button'
 import { GridPattern } from '@/components/magicui/grid-pattern'
+import Footer from '@/components/layout/Footer'
 
 const Home = () => {
 	return (
@@ -45,6 +47,8 @@ const Home = () => {
 				</div>
 			</main>
 			<FeatureCards />
+			<Faqs />
+			<Footer />
 		</div>
 	)
 }
