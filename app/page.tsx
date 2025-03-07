@@ -3,12 +3,19 @@ import Header from '@/components/layout/Header'
 import { Cover } from '@/components/ui/cover'
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text'
 import { InteractiveHoverButton } from '@/components/magicui/interactive-hover-button'
+import { GridPattern } from '@/components/magicui/grid-pattern'
 
 const Home = () => {
 	return (
 		<div>
 			<Header />
-			<main className="flex-1 flex flex-col items-center justify-center py-16 px-6 text-center">
+			<main className="flex-1 flex flex-col items-center justify-center py-16 px-6 text-center relative">
+				<GridPattern
+					className="opacity-80"
+					width={30}
+					height={30}
+					strokeDasharray="1 3"
+				/>
 				<div className="max-w-4xl mx-auto">
 					<div className="mb-6 flex justify-center">
 						<div className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 inline-flex items-center shadow-sm">
