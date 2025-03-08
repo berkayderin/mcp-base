@@ -74,7 +74,7 @@ const Header = () => {
 									</div>
 								</Link>
 
-								<nav className="hidden md:flex items-center space-x-3">
+								<nav className="hidden lg:flex items-center space-x-3">
 									<Link
 										href="/servers"
 										className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 px-4 py-2 rounded-md border border-transparent hover:border-gray-200 hover:bg-gray-50/80"
@@ -99,7 +99,7 @@ const Header = () => {
 								</nav>
 							</div>
 
-							<div className="hidden md:flex items-center gap-4">
+							<div className="hidden lg:flex items-center gap-4">
 								<Button
 									variant="outline"
 									className="text-gray-600 hover:text-gray-900 font-medium inline-flex items-center gap-2 border-gray-200 hover:border-gray-300 w-64"
@@ -127,7 +127,7 @@ const Header = () => {
 								</Button>
 							</div>
 
-							<div className="md:hidden">
+							<div className="lg:hidden">
 								<Button
 									variant="ghost"
 									className="p-2 rounded-md border border-transparent hover:border-gray-200 hover:bg-gray-50/80"
@@ -154,7 +154,7 @@ const Header = () => {
 							animate={{ opacity: 1, height: 'auto' }}
 							exit={{ opacity: 0, height: 0 }}
 							transition={{ duration: 0.3 }}
-							className="md:hidden bg-white rounded-md border border-gray-200 shadow-sm mt-2 w-full max-w-7xl mx-auto overflow-hidden"
+							className="lg:hidden bg-white rounded-md border border-gray-200 shadow-sm mt-2 w-full max-w-7xl mx-auto overflow-hidden"
 						>
 							<motion.div
 								initial={{ y: -20, opacity: 0 }}
