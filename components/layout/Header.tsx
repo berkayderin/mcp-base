@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import {
 	Menu,
 	Server,
-	Users,
+	Network,
 	LogIn,
 	X,
 	SendHorizontal,
@@ -92,7 +92,7 @@ const Header = () => {
 										href="/clients"
 										className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 px-4 py-2 rounded-md border border-transparent hover:border-gray-200 hover:bg-gray-50/80"
 									>
-										<Users className="w-4 h-4" />
+										<Network className="w-4 h-4" />
 										<span>Clients</span>
 									</Link>
 									<Link
@@ -201,7 +201,7 @@ const Header = () => {
 										className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 p-3 rounded-md border border-transparent hover:border-gray-200 hover:bg-gray-50/80"
 										onClick={() => setIsMobileMenuOpen(false)}
 									>
-										<Users className="w-4 h-4" />
+										<Network className="w-4 h-4" />
 										<span>Clients</span>
 									</Link>
 
