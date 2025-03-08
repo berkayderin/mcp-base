@@ -15,11 +15,13 @@ import {
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Search from '@/components/layout/Search'
+import AddServerModal from '@/components/core/AddServerModal'
 
 const Header = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 	const [scrolled, setScrolled] = useState(false)
 	const [searchOpen, setSearchOpen] = useState(false)
+	const [addServerOpen, setAddServerOpen] = useState(false)
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -42,6 +44,10 @@ const Header = () => {
 
 	return (
 		<>
+			<AddServerModal
+				open={addServerOpen}
+				onOpenChange={setAddServerOpen}
+			/>
 			<Search open={searchOpen} onOpenChange={setSearchOpen} />
 
 			<header
@@ -114,6 +120,7 @@ const Header = () => {
 								<Button
 									variant="outline"
 									className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 px-4 py-2 rounded-md hover:border-gray-200 hover:bg-gray-50/80"
+									onClick={() => setAddServerOpen(true)}
 								>
 									<SendHorizontal className="w-4 h-4" />
 									Add Server
@@ -212,7 +219,10 @@ const Header = () => {
 									<Button
 										variant="outline"
 										className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 p-3 rounded-md hover:border-gray-200 hover:bg-gray-50/80 w-full"
-										onClick={() => setIsMobileMenuOpen(false)}
+										onClick={() => {
+											setIsMobileMenuOpen(false)
+											setAddServerOpen(true)
+										}}
 									>
 										<SendHorizontal className="w-4 h-4" />
 										Add Server
