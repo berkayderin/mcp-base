@@ -123,7 +123,7 @@ const Footer = () => {
 							<ul className="space-y-2 md:space-y-3">
 								<li>
 									<Link
-										href="#"
+										href="/privacy-policy"
 										className="text-gray-600 hover:text-black transition-colors text-sm md:text-base"
 									>
 										Privacy Policy
@@ -131,7 +131,7 @@ const Footer = () => {
 								</li>
 								<li>
 									<Link
-										href="#"
+										href="/terms-of-service"
 										className="text-gray-600 hover:text-black transition-colors text-sm md:text-base"
 									>
 										Terms of Service
