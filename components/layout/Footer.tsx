@@ -11,7 +11,7 @@ const Footer = () => {
 					<div className="col-span-1">
 						<Link
 							href="/"
-							className="flex items-center hover:opacity-90 transition-opacity mb-4 md:mb-6"
+							className="flex items-center hover:opacity-90 transition-opacity mb-4 md:mb-6 justify-center md:justify-start"
 						>
 							<div className="flex items-center">
 								<div className="flex items-center px-3 py-2 rounded-md bg-gradient-to-r from-orange-500 to-pink-500 shadow-sm hover:shadow-md transition-all">
@@ -21,7 +21,7 @@ const Footer = () => {
 								</div>
 							</div>
 						</Link>
-						<p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">
+						<p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base text-center md:text-left">
 							The largest collection of MCP Servers, featuring Awesome
 							MCP Servers and Claude MCP integration.
 						</p>
@@ -142,9 +142,9 @@ const Footer = () => {
 					</div>
 				</div>
 
-				<div className="border-t pt-4 md:pt-5 flex flex-col md:flex-row justify-between items-center">
+				<div className="flex flex-col md:flex-row md:justify-end justify-between items-center">
 					<div className="mb-2 md:mb-0">
-						<p className="text-xs md:text-sm text-gray-600 text-center md:text-left">
+						<p className="text-sm text-gray-600 text-center md:text-left">
 							<span className="font-semibold">
 								model-context-protocol
 							</span>{' '}

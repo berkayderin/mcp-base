@@ -1,15 +1,18 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans } from 'next/font/google'
 import './globals.css'
+import { IBM_Plex_Sans } from 'next/font/google'
+import ScrollToTop from '@/components/core/ScrollToTop'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 
 const ibmPlexSans = IBM_Plex_Sans({
 	subsets: ['latin'],
-	weight: ['400', '500', '600', '700'],
+	weight: ['300', '400', '500', '600', '700'],
 	variable: '--font-ibm-plex-sans'
 })
 
 export const metadata: Metadata = {
-	title: 'MCP | model context protocol',
+	title: 'Model Context Protocol | MCP',
 	description:
 		'Discover and list high-performance Model Context Protocol servers. The premier platform for AI model deployment, offering a comprehensive directory of MCP servers with real-time availability, performance metrics, and seamless integration capabilities.'
 }
@@ -24,7 +27,10 @@ export default function RootLayout({
 			<body
 				className={`${ibmPlexSans.variable} font-sans antialiased`}
 			>
+				<Header />
 				{children}
+				<Footer />
+				<ScrollToTop />
 			</body>
 		</html>
 	)
