@@ -48,7 +48,6 @@ const BlogDetailPage = ({ params }: { params: { slug: string } }) => {
 					<button
 						onClick={() => handleShare('twitter')}
 						className="p-2 rounded-full bg-black hover:bg-gray-800 text-white transition-colors"
-						aria-label="Twitter'da paylaş"
 					>
 						<FaXTwitter size={18} />
 					</button>
@@ -56,7 +55,6 @@ const BlogDetailPage = ({ params }: { params: { slug: string } }) => {
 					<button
 						onClick={() => handleShare('linkedin')}
 						className="p-2 rounded-full bg-[#0077b5] hover:bg-[#006396] text-white transition-colors"
-						aria-label="LinkedIn'de paylaş"
 					>
 						<FaLinkedin size={18} />
 					</button>
@@ -64,7 +62,6 @@ const BlogDetailPage = ({ params }: { params: { slug: string } }) => {
 					<button
 						onClick={() => handleShare('whatsapp')}
 						className="p-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white transition-colors"
-						aria-label="WhatsApp'ta paylaş"
 					>
 						<FaWhatsapp size={18} />
 					</button>
