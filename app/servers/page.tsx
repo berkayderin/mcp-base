@@ -3,14 +3,38 @@ import { GridPattern } from '@/components/magicui/grid-pattern'
 import { Cover } from '@/components/ui/cover'
 import React from 'react'
 import { Input } from '@/components/ui/input'
-import { Search, ExternalLink } from 'lucide-react'
+import { Search, Star, Code, Github } from 'lucide-react'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { categories } from '@/data/categories'
+import { getServersWithPagination } from '@/utils/queries/servers'
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious
+} from '@/components/ui/pagination'
 
-const ServersPage = () => {
+export default async function ServersPage({
+	searchParams
+}: {
+	searchParams: { page?: string }
+}) {
+	const currentPage = searchParams.page
+		? parseInt(searchParams.page)
+		: 1
+
+	const {
+		data: servers,
+		count,
+		totalPages
+	} = await getServersWithPagination(currentPage, 15)
+
 	return (
 		<div className="container mx-auto px-6 py-20 max-w-5xl">
 			<main className="flex-1 flex flex-col items-center justify-center text-center relative">
@@ -25,7 +49,7 @@ const ServersPage = () => {
 						<div className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 inline-flex items-center shadow-sm">
 							<span className="mr-2">🚀</span>
 							<AnimatedShinyText shimmerWidth={150}>
-								+1985 MCP Servers in list
+								+{count || 0} MCP Servers in list
 							</AnimatedShinyText>
 						</div>
 					</div>
@@ -65,7 +89,10 @@ const ServersPage = () => {
 							variant="outline"
 							className="px-4 py-2 text-sm font-medium bg-orange-50 border-orange-200"
 						>
-							All <span className="ml-1 text-orange-500">+500</span>
+							All{' '}
+							<span className="ml-1 text-orange-500">
+								+{count || 0}
+							</span>
 						</Badge>
 						{categories.map((category, index) => (
 							<Badge
@@ -87,179 +114,163 @@ const ServersPage = () => {
 			<h2 className="text-2xl font-bold mb-6">All MCP Servers</h2>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				<Link href="/servers/chatsum">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
-								<span className="text-green-500 text-lg">💬</span>
-							</div>
-							<div className="flex-1">
-								<h3 className="font-semibold text-lg">ChatSum</h3>
-								<p className="text-sm text-gray-500">
-									Query and Summarize your chat messages.
-								</p>
-								<div className="mt-3 flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">
-										# chatsum
-									</Badge>
-									<Badge variant="secondary" className="text-xs">
-										# chat-summarizer
-									</Badge>
+				{servers && servers.length > 0 ? (
+					servers.map((server) => (
+						<Link
+							href={server.html_url}
+							key={server.id}
+							target="_blank"
+						>
+							<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden h-full">
+								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
+								<div className="absolute inset-[2px] rounded-xl bg-white"></div>
+								<div className="relative flex flex-col h-full">
+									<div className="flex flex-col">
+										<div className="flex justify-between items-start">
+											<h3 className="font-semibold text-lg line-clamp-1">
+												{server.name}
+											</h3>
+											<Link
+												href={server.html_url}
+												target="_blank"
+												className="text-gray-500 hover:text-gray-700"
+											>
+												<Github className="h-5 w-5" />
+											</Link>
+										</div>
+										<div className="flex items-center gap-2 mt-1">
+											<div className="flex items-center text-yellow-500">
+												<Star className="h-4 w-4 fill-yellow-500" />
+												<span className="ml-1 text-sm">
+													{server.stars.toLocaleString()}
+												</span>
+											</div>
+											{server.language && (
+												<div className="flex items-center text-gray-500">
+													<Code className="h-4 w-4" />
+													<span className="ml-1 text-sm">
+														{server.language}
+													</span>
+												</div>
+											)}
+										</div>
+										<p className="text-sm text-gray-600 mt-2 line-clamp-2">
+											{server.description ||
+												'No description available'}
+										</p>
+									</div>
+
+									{server.categories &&
+										server.categories.length > 0 && (
+											<div className="mt-auto pt-4">
+												<div className="flex flex-wrap gap-1.5">
+													{server.categories.map((category, idx) => (
+														<Badge
+															key={idx}
+															variant="secondary"
+															className="text-xs px-2 py-0.5 bg-gray-50 text-gray-700 font-normal rounded-full"
+														>
+															{category}
+														</Badge>
+													))}
+												</div>
+											</div>
+										)}
 								</div>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
-							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+							</Card>
+						</Link>
+					))
+				) : (
+					<div className="col-span-3 text-center py-10">
+						<p className="text-gray-500">No servers found</p>
+					</div>
+				)}
+			</div>
 
-				<Link href="/servers/google-search">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-blue-50 rounded-md flex items-center justify-center">
-								<span>🔍</span>
-							</div>
-							<div className="flex-1">
-								<div className="flex items-center gap-2">
-									<h3 className="font-semibold text-lg">
-										Google Search MCP
-									</h3>
-								</div>
-								<p className="text-xs text-gray-500">by mixelpixx</p>
-								<p className="text-sm text-gray-600 mt-1">
-									An MCP (Model Context Protocol) server that provides
-									Google search capabilities and webpage content...
-								</p>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
-							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+			<div className="mt-10 flex justify-center">
+				<Pagination>
+					<PaginationContent>
+						{currentPage > 1 && (
+							<PaginationItem>
+								<PaginationPrevious
+									href={`/servers?page=${currentPage - 1}`}
+								/>
+							</PaginationItem>
+						)}
 
-				<Link href="/servers/dubco">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-purple-50 rounded-md flex items-center justify-center">
-								<span>🔗</span>
-							</div>
-							<div className="flex-1">
-								<h3 className="font-semibold text-lg">
-									Dubco Mcp Server
-								</h3>
-								<p className="text-xs text-gray-500">by Gitmaxd</p>
-								<p className="text-sm text-gray-600 mt-1">
-									The (Unofficial) dubco-mcp-server enables AI
-									assistants to manage Dub.co short links via the
-									Model...
-								</p>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
+						<PaginationItem>
+							<PaginationLink
+								href="/servers?page=1"
+								isActive={currentPage === 1}
 							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+								1
+							</PaginationLink>
+						</PaginationItem>
 
-				<Link href="/servers/tempo">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-blue-50 rounded-md flex items-center justify-center">
-								<span>📂</span>
-							</div>
-							<div className="flex-1">
-								<h3 className="font-semibold text-lg">
-									Mcp server tempo
-								</h3>
-								<p className="text-xs text-gray-500">by tempo-io</p>
-								<p className="text-sm text-gray-600 mt-1">
-									mcp server tempo best directory
-								</p>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
-							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+						{currentPage > 3 && (
+							<PaginationItem>
+								<PaginationEllipsis />
+							</PaginationItem>
+						)}
 
-				<Link href="/servers/bets">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-yellow-50 rounded-md flex items-center justify-center">
-								<span>🎲</span>
-							</div>
-							<div className="flex-1">
-								<h3 className="font-semibold text-lg">Mcp Bets</h3>
-								<p className="text-xs text-gray-500">by chatmcp</p>
-								<p className="text-sm text-gray-600 mt-1">bets mcp</p>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
-							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+						{currentPage > 2 && (
+							<PaginationItem>
+								<PaginationLink
+									href={`/servers?page=${currentPage - 1}`}
+								>
+									{currentPage - 1}
+								</PaginationLink>
+							</PaginationItem>
+						)}
 
-				<Link href="/servers/gitee">
-					<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden">
-						<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-						<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-						<div className="relative flex items-start gap-4">
-							<div className="w-10 h-10 bg-red-50 rounded-md flex items-center justify-center">
-								<span>🧩</span>
-							</div>
-							<div className="flex-1">
-								<h3 className="font-semibold text-lg">
-									Gitee MCP Server
-								</h3>
-								<p className="text-xs text-gray-500">
-									by normal-coder
-								</p>
-								<p className="text-sm text-gray-600 mt-1">
-									MCP Tool Server for Gitee, supporting the management
-									of repository files/branches, issues...
-								</p>
-							</div>
-							<Link
-								href="#"
-								className="text-gray-400 hover:text-gray-600"
-							>
-								<ExternalLink className="h-4 w-4" />
-							</Link>
-						</div>
-					</Card>
-				</Link>
+						{currentPage !== 1 && currentPage !== totalPages && (
+							<PaginationItem>
+								<PaginationLink
+									href={`/servers?page=${currentPage}`}
+									isActive
+								>
+									{currentPage}
+								</PaginationLink>
+							</PaginationItem>
+						)}
+
+						{currentPage < totalPages - 1 && (
+							<PaginationItem>
+								<PaginationLink
+									href={`/servers?page=${currentPage + 1}`}
+								>
+									{currentPage + 1}
+								</PaginationLink>
+							</PaginationItem>
+						)}
+
+						{currentPage < totalPages - 2 && (
+							<PaginationItem>
+								<PaginationEllipsis />
+							</PaginationItem>
+						)}
+
+						{totalPages > 1 && (
+							<PaginationItem>
+								<PaginationLink
+									href={`/servers?page=${totalPages}`}
+									isActive={currentPage === totalPages}
+								>
+									{totalPages}
+								</PaginationLink>
+							</PaginationItem>
+						)}
+
+						{currentPage < totalPages && (
+							<PaginationItem>
+								<PaginationNext
+									href={`/servers?page=${currentPage + 1}`}
+								/>
+							</PaginationItem>
+						)}
+					</PaginationContent>
+				</Pagination>
 			</div>
 		</div>
 	)
 }
-
-export default ServersPage
