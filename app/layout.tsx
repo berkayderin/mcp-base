@@ -4,6 +4,7 @@ import { IBM_Plex_Sans } from 'next/font/google'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/core/home/ScrollToTop'
+import SupabaseProvider from './providers'
 
 const ibmPlexSans = IBM_Plex_Sans({
 	subsets: ['latin'],
@@ -27,10 +28,12 @@ export default function RootLayout({
 			<body
 				className={`${ibmPlexSans.variable} font-sans antialiased`}
 			>
-				<Header />
-				{children}
-				<Footer />
-				<ScrollToTop />
+				<SupabaseProvider>
+					<Header />
+					{children}
+					<Footer />
+					<ScrollToTop />
+				</SupabaseProvider>
 			</body>
 		</html>
 	)
