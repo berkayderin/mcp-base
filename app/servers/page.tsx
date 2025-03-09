@@ -13,7 +13,7 @@ import {
 	getServersWithPagination,
 	getCategoryCounts,
 	searchServers
-} from '@/utils/queries/servers'
+} from '@/backend/queries/servers'
 import {
 	Pagination,
 	PaginationContent,

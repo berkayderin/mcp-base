@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Star, ExternalLink } from 'lucide-react'
-import { getTopServers } from '@/utils/queries/servers'
+import { getTopServers } from '@/backend/queries/servers'
 
 type Card = {
 	id: number
