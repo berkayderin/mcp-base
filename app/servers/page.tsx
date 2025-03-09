@@ -192,7 +192,7 @@ export default async function ServersPage({
 											href={server.html_url}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="text-gray-500 hover:text-gray-700"
+											className="text-gray-500 hover:text-gray-700 z-10"
 											aria-label="View on GitHub"
 										>
 											<Github className="h-5 w-5" />
@@ -235,15 +235,13 @@ export default async function ServersPage({
 											</div>
 										)}
 								</div>
-								<a
-									href={server.html_url}
-									target="_blank"
-									rel="noopener noreferrer"
+								<Link
+									href={`/servers/${server.id}`}
 									className="absolute inset-0"
-									aria-label={`View ${server.name} repository`}
+									aria-label={`View ${server.name} details`}
 								>
-									<span className="sr-only">View project</span>
-								</a>
+									<span className="sr-only">View server details</span>
+								</Link>
 							</div>
 						</Card>
 					))
