@@ -9,7 +9,10 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { categories } from '@/data/categories'
-import { getServersWithPagination } from '@/utils/queries/servers'
+import {
+	getServersWithPagination,
+	getCategoryCounts
+} from '@/utils/queries/servers'
 import {
 	Pagination,
 	PaginationContent,
@@ -19,21 +22,28 @@ import {
 	PaginationNext,
 	PaginationPrevious
 } from '@/components/ui/pagination'
+import { clsx } from 'clsx'
 
 export default async function ServersPage({
 	searchParams
 }: {
-	searchParams: { page?: string }
+	searchParams: {
+		page?: string
+		category?: string
+	}
 }) {
 	const currentPage = searchParams.page
 		? parseInt(searchParams.page)
 		: 1
+	const currentCategory = searchParams.category || 'All'
 
 	const {
 		data: servers,
-		count,
+		totalCount,
 		totalPages
-	} = await getServersWithPagination(currentPage, 15)
+	} = await getServersWithPagination(currentPage, 15, currentCategory)
+
+	const categoryCounts = await getCategoryCounts()
 
 	return (
 		<div className="container mx-auto px-6 py-20 max-w-7xl">
@@ -49,7 +59,7 @@ export default async function ServersPage({
 						<div className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 inline-flex items-center shadow-sm">
 							<span className="mr-2">🚀</span>
 							<AnimatedShinyText shimmerWidth={150}>
-								+{count || 0} MCP Servers in list
+								+{totalCount || 0} MCP Servers in list
 							</AnimatedShinyText>
 						</div>
 					</div>
@@ -85,26 +95,60 @@ export default async function ServersPage({
 			<div className="mt-12 mb-4">
 				<ScrollArea className="w-full whitespace-nowrap">
 					<div className="flex space-x-2 py-4">
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium bg-orange-50 border-orange-200"
+						<Link
+							href="/servers?category=All"
+							className={clsx(
+								'inline-block',
+								currentCategory === 'All' && 'pointer-events-none'
+							)}
 						>
-							All{' '}
-							<span className="ml-1 text-orange-500">
-								+{count || 0}
-							</span>
-						</Badge>
-						{categories.map((category, index) => (
 							<Badge
-								key={index}
 								variant="outline"
-								className="px-4 py-2 text-sm font-medium"
+								className={clsx(
+									'px-4 py-2 text-sm font-medium',
+									currentCategory === 'All'
+										? 'bg-orange-50 border-orange-200'
+										: 'hover:bg-orange-50 hover:border-orange-200'
+								)}
 							>
-								{category}{' '}
-								<span className="ml-1 text-gray-500">
-									{Math.floor(Math.random() * 300) + 50}
+								All{' '}
+								<span className="ml-1 text-orange-500">
+									+{totalCount || 0}
 								</span>
 							</Badge>
+						</Link>
+						{categories.map((category, index) => (
+							<Link
+								key={index}
+								href={`/servers?category=${category}`}
+								className={clsx(
+									'inline-block',
+									currentCategory === category &&
+										'pointer-events-none'
+								)}
+							>
+								<Badge
+									variant="outline"
+									className={clsx(
+										'px-4 py-2 text-sm font-medium',
+										currentCategory === category
+											? 'bg-orange-50 border-orange-200'
+											: 'hover:bg-orange-50 hover:border-orange-200'
+									)}
+								>
+									{category}{' '}
+									<span
+										className={clsx(
+											'ml-1',
+											currentCategory === category
+												? 'text-orange-500'
+												: 'text-gray-500'
+										)}
+									>
+										{categoryCounts[category] || 0}
+									</span>
+								</Badge>
+							</Link>
 						))}
 					</div>
 					<ScrollBar orientation="horizontal" />
