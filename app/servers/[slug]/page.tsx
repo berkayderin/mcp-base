@@ -219,7 +219,7 @@ export default async function ServerDetailPage({
 										>
 											<div className="flex flex-col md:flex-row">
 												<div className="w-full md:w-64 md:min-w-64 border-r border-orange-100">
-													<TabsList className="h-auto flex flex-col items-stretch p-2 bg-orange-50/70">
+													<TabsList className="h-auto flex flex-col items-stretch p-2 bg-orange-50/70 rounded-l-3xl rounded-t-none">
 														{Object.keys(analysisData.analysis).map(
 															(key: string, idx: number) => {
 																const tabValue = createTabValue(key)
@@ -252,7 +252,7 @@ export default async function ServerDetailPage({
 													</TabsList>
 												</div>
 
-												<div className="flex-1 p-8 bg-white">
+												<div className="flex-1 p-8 bg-white rounded-r-3xl">
 													{Object.entries(analysisData.analysis).map(
 														([key, content]) => {
 															const tabValue = createTabValue(key)
