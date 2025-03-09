@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { IBM_Plex_Sans } from 'next/font/google'
-import ScrollToTop from '@/components/core/ScrollToTop'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import ScrollToTop from '@/components/core/home/ScrollToTop'
 
 const ibmPlexSans = IBM_Plex_Sans({
 	subsets: ['latin'],
