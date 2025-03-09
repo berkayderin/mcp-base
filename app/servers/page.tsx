@@ -36,7 +36,7 @@ export default async function ServersPage({
 	} = await getServersWithPagination(currentPage, 15)
 
 	return (
-		<div className="container mx-auto px-6 py-20 max-w-5xl">
+		<div className="container mx-auto px-6 py-20 max-w-7xl">
 			<main className="flex-1 flex flex-col items-center justify-center text-center relative">
 				<GridPattern
 					className="opacity-80"
@@ -116,69 +116,68 @@ export default async function ServersPage({
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{servers && servers.length > 0 ? (
 					servers.map((server) => (
-						<Link
-							href={server.html_url}
+						<Card
 							key={server.id}
-							target="_blank"
+							className="group relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl bg-white p-[2px] shadow-sm transition-all hover:shadow-md overflow-hidden h-full"
 						>
-							<Card className="relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-transparent hover:shadow-md group overflow-hidden h-full">
-								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 group-hover:opacity-100"></div>
-								<div className="absolute inset-[2px] rounded-xl bg-white"></div>
-								<div className="relative flex flex-col h-full">
-									<div className="flex flex-col">
-										<div className="flex justify-between items-start">
-											<h3 className="font-semibold text-lg line-clamp-1">
-												{server.name}
-											</h3>
-											<Link
-												href={server.html_url}
-												target="_blank"
-												className="text-gray-500 hover:text-gray-700"
-											>
-												<Github className="h-5 w-5" />
-											</Link>
+							<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
+							<Link
+								href={server.html_url}
+								target="_blank"
+								className="relative flex h-full flex-col rounded-xl bg-white p-6"
+							>
+								<div className="flex flex-col h-full">
+									<div className="flex justify-between items-start">
+										<h3 className="font-semibold text-lg line-clamp-1">
+											{server.name}
+										</h3>
+										<Link
+											href={server.html_url}
+											target="_blank"
+											className="text-gray-500 hover:text-gray-700"
+										>
+											<Github className="h-5 w-5" />
+										</Link>
+									</div>
+									<div className="flex items-center gap-2 mt-1">
+										<div className="flex items-center text-yellow-500">
+											<Star className="h-4 w-4 fill-yellow-500" />
+											<span className="ml-1 text-sm">
+												{server.stars.toLocaleString()}
+											</span>
 										</div>
-										<div className="flex items-center gap-2 mt-1">
-											<div className="flex items-center text-yellow-500">
-												<Star className="h-4 w-4 fill-yellow-500" />
+										{server.language && (
+											<div className="flex items-center text-gray-500">
+												<Code className="h-4 w-4" />
 												<span className="ml-1 text-sm">
-													{server.stars.toLocaleString()}
+													{server.language}
 												</span>
 											</div>
-											{server.language && (
-												<div className="flex items-center text-gray-500">
-													<Code className="h-4 w-4" />
-													<span className="ml-1 text-sm">
-														{server.language}
-													</span>
-												</div>
-											)}
-										</div>
-										<p className="text-sm text-gray-600 mt-2 line-clamp-2">
-											{server.description ||
-												'No description available'}
-										</p>
-									</div>
-
-									{server.categories &&
-										server.categories.length > 0 && (
-											<div className="mt-auto pt-4">
-												<div className="flex flex-wrap gap-1.5">
-													{server.categories.map((category, idx) => (
-														<Badge
-															key={idx}
-															variant="secondary"
-															className="text-xs px-2 py-0.5 bg-gray-50 text-gray-700 font-normal rounded-full"
-														>
-															{category}
-														</Badge>
-													))}
-												</div>
-											</div>
 										)}
+									</div>
+									<p className="text-sm text-gray-600 mt-2 line-clamp-2">
+										{server.description || 'No description available'}
+									</p>
 								</div>
-							</Card>
-						</Link>
+
+								{server.categories &&
+									server.categories.length > 0 && (
+										<div className="mt-auto pt-4">
+											<div className="flex flex-wrap gap-1.5">
+												{server.categories.map((category, idx) => (
+													<Badge
+														key={idx}
+														variant="secondary"
+														className="text-xs px-2 py-0.5 bg-gray-50 text-gray-700 font-normal rounded-full"
+													>
+														{category}
+													</Badge>
+												))}
+											</div>
+										</div>
+									)}
+							</Link>
+						</Card>
 					))
 				) : (
 					<div className="col-span-3 text-center py-10">
