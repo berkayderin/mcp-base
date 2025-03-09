@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { categories } from '@/data/categories'
 
 const ServersPage = () => {
 	return (
@@ -64,61 +65,20 @@ const ServersPage = () => {
 							variant="outline"
 							className="px-4 py-2 text-sm font-medium bg-orange-50 border-orange-200"
 						>
-							All <span className="ml-1 text-orange-500">1512</span>
+							All <span className="ml-1 text-orange-500">+500</span>
 						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Developer Tools{' '}
-							<span className="ml-1 text-gray-500">1002</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Research And Data{' '}
-							<span className="ml-1 text-gray-500">401</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Cloud Platforms{' '}
-							<span className="ml-1 text-gray-500">38</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Browser Automation{' '}
-							<span className="ml-1 text-gray-500">17</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Databases <span className="ml-1 text-gray-500">11</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							AI Chatbot <span className="ml-1 text-gray-500">3</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							File Systems{' '}
-							<span className="ml-1 text-gray-500">4</span>
-						</Badge>
-						<Badge
-							variant="outline"
-							className="px-4 py-2 text-sm font-medium"
-						>
-							Os Automation
-						</Badge>
+						{categories.map((category, index) => (
+							<Badge
+								key={index}
+								variant="outline"
+								className="px-4 py-2 text-sm font-medium"
+							>
+								{category}{' '}
+								<span className="ml-1 text-gray-500">
+									{Math.floor(Math.random() * 300) + 50}
+								</span>
+							</Badge>
+						))}
 					</div>
 					<ScrollBar orientation="horizontal" />
 				</ScrollArea>
