@@ -109,3 +109,46 @@ export async function getCategoryCounts() {
 
 	return categoryCounts
 }
+
+export async function searchServers(
+	searchQuery: string,
+	page: number = 1,
+	pageSize: number = 15
+) {
+	const supabase = createClient()
+	const from = (page - 1) * pageSize
+	const to = from + pageSize - 1
+
+	const { count: totalCount } = await supabase
+		.from('servers')
+		.select('id', { count: 'exact', head: true })
+		.or(
+			`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,language.ilike.%${searchQuery}%`
+		)
+
+	const query = supabase
+		.from('servers')
+		.select(
+			'id, name, html_url, description, language, stars, categories'
+		)
+		.or(
+			`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,language.ilike.%${searchQuery}%`
+		)
+		.order('stars', { ascending: false })
+		.range(from, to)
+
+	const { data, error } = await query
+
+	if (error) {
+		console.error('Error searching servers:', error)
+		return { data: [], totalCount: 0, totalPages: 0 }
+	}
+
+	const totalPages = Math.ceil((totalCount || 0) / pageSize)
+
+	return {
+		data: data as ResponseServer[],
+		totalCount,
+		totalPages
+	}
+}

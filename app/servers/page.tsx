@@ -11,7 +11,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { categories } from '@/data/categories'
 import {
 	getServersWithPagination,
-	getCategoryCounts
+	getCategoryCounts,
+	searchServers
 } from '@/utils/queries/servers'
 import {
 	Pagination,
@@ -30,18 +31,22 @@ export default async function ServersPage({
 	searchParams: {
 		page?: string
 		category?: string
+		search?: string
 	}
 }) {
 	const currentPage = searchParams.page
 		? parseInt(searchParams.page)
 		: 1
 	const currentCategory = searchParams.category || 'All'
+	const searchQuery = searchParams.search || ''
 
 	const {
 		data: servers,
 		totalCount,
 		totalPages
-	} = await getServersWithPagination(currentPage, 15, currentCategory)
+	} = searchQuery
+		? await searchServers(searchQuery, currentPage)
+		: await getServersWithPagination(currentPage, 15, currentCategory)
 
 	const categoryCounts = await getCategoryCounts()
 
@@ -49,7 +54,7 @@ export default async function ServersPage({
 		<div className="container mx-auto px-6 py-20 max-w-7xl">
 			<main className="flex-1 flex flex-col items-center justify-center text-center relative">
 				<GridPattern
-					className="opacity-80"
+					className="opacity-100"
 					width={30}
 					height={30}
 					strokeDasharray="1 3"
@@ -78,16 +83,24 @@ export default async function ServersPage({
 					</p>
 
 					<div className="flex justify-center">
-						<div className="relative w-full max-w-md">
+						<form
+							action="/servers"
+							className="relative w-full max-w-md"
+						>
 							<Input
 								type="text"
+								name="search"
 								placeholder="Search with keywords..."
 								className="pr-10"
+								autoComplete="off"
 							/>
-							<button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground">
+							<button
+								type="submit"
+								className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+							>
 								<Search className="h-4 w-4" />
 							</button>
-						</div>
+						</form>
 					</div>
 				</div>
 			</main>
@@ -96,7 +109,9 @@ export default async function ServersPage({
 				<ScrollArea className="w-full whitespace-nowrap">
 					<div className="flex space-x-2 py-4">
 						<Link
-							href="/servers?category=All"
+							href={`/servers?category=All${
+								searchQuery ? `&search=${searchQuery}` : ''
+							}`}
 							className={clsx(
 								'inline-block',
 								currentCategory === 'All' && 'pointer-events-none'
@@ -120,7 +135,9 @@ export default async function ServersPage({
 						{categories.map((category, index) => (
 							<Link
 								key={index}
-								href={`/servers?category=${category}`}
+								href={`/servers?category=${category}${
+									searchQuery ? `&search=${searchQuery}` : ''
+								}`}
 								className={clsx(
 									'inline-block',
 									currentCategory === category &&
@@ -165,23 +182,21 @@ export default async function ServersPage({
 							className="group relative max-w-full flex-shrink-0 cursor-pointer rounded-2xl bg-white p-[2px] shadow-sm transition-all hover:shadow-md overflow-hidden h-full"
 						>
 							<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500 to-pink-500 opacity-0 transition-opacity group-hover:opacity-100" />
-							<Link
-								href={server.html_url}
-								target="_blank"
-								className="relative flex h-full flex-col rounded-xl bg-white p-6"
-							>
+							<div className="relative flex h-full flex-col rounded-xl bg-white p-6">
 								<div className="flex flex-col h-full">
 									<div className="flex justify-between items-start">
 										<h3 className="font-semibold text-lg line-clamp-1">
 											{server.name}
 										</h3>
-										<Link
+										<a
 											href={server.html_url}
 											target="_blank"
+											rel="noopener noreferrer"
 											className="text-gray-500 hover:text-gray-700"
+											aria-label="View on GitHub"
 										>
 											<Github className="h-5 w-5" />
-										</Link>
+										</a>
 									</div>
 									<div className="flex items-center gap-2 mt-1">
 										<div className="flex items-center text-yellow-500">
@@ -202,25 +217,34 @@ export default async function ServersPage({
 									<p className="text-sm text-gray-600 mt-2 line-clamp-2">
 										{server.description || 'No description available'}
 									</p>
-								</div>
 
-								{server.categories &&
-									server.categories.length > 0 && (
-										<div className="mt-auto pt-4">
-											<div className="flex flex-wrap gap-1.5">
-												{server.categories.map((category, idx) => (
-													<Badge
-														key={idx}
-														variant="secondary"
-														className="text-xs px-2 py-0.5 bg-gray-50 text-gray-700 font-normal rounded-full"
-													>
-														{category}
-													</Badge>
-												))}
+									{server.categories &&
+										server.categories.length > 0 && (
+											<div className="mt-auto pt-4">
+												<div className="flex flex-wrap gap-1.5">
+													{server.categories.map((category, idx) => (
+														<Badge
+															key={idx}
+															variant="secondary"
+															className="text-xs px-2 py-0.5 bg-gray-50 text-gray-700 font-normal rounded-full"
+														>
+															{category}
+														</Badge>
+													))}
+												</div>
 											</div>
-										</div>
-									)}
-							</Link>
+										)}
+								</div>
+								<a
+									href={server.html_url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="absolute inset-0"
+									aria-label={`View ${server.name} repository`}
+								>
+									<span className="sr-only">View project</span>
+								</a>
+							</div>
 						</Card>
 					))
 				) : (
@@ -236,14 +260,22 @@ export default async function ServersPage({
 						{currentPage > 1 && (
 							<PaginationItem>
 								<PaginationPrevious
-									href={`/servers?page=${currentPage - 1}`}
+									href={`/servers?page=${currentPage - 1}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 								/>
 							</PaginationItem>
 						)}
 
 						<PaginationItem>
 							<PaginationLink
-								href="/servers?page=1"
+								href={`/servers?page=1${
+									currentCategory !== 'All'
+										? `&category=${currentCategory}`
+										: ''
+								}${searchQuery ? `&search=${searchQuery}` : ''}`}
 								isActive={currentPage === 1}
 							>
 								1
@@ -259,7 +291,11 @@ export default async function ServersPage({
 						{currentPage > 2 && (
 							<PaginationItem>
 								<PaginationLink
-									href={`/servers?page=${currentPage - 1}`}
+									href={`/servers?page=${currentPage - 1}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 								>
 									{currentPage - 1}
 								</PaginationLink>
@@ -269,7 +305,11 @@ export default async function ServersPage({
 						{currentPage !== 1 && currentPage !== totalPages && (
 							<PaginationItem>
 								<PaginationLink
-									href={`/servers?page=${currentPage}`}
+									href={`/servers?page=${currentPage}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 									isActive
 								>
 									{currentPage}
@@ -280,7 +320,11 @@ export default async function ServersPage({
 						{currentPage < totalPages - 1 && (
 							<PaginationItem>
 								<PaginationLink
-									href={`/servers?page=${currentPage + 1}`}
+									href={`/servers?page=${currentPage + 1}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 								>
 									{currentPage + 1}
 								</PaginationLink>
@@ -296,7 +340,11 @@ export default async function ServersPage({
 						{totalPages > 1 && (
 							<PaginationItem>
 								<PaginationLink
-									href={`/servers?page=${totalPages}`}
+									href={`/servers?page=${totalPages}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 									isActive={currentPage === totalPages}
 								>
 									{totalPages}
@@ -307,7 +355,11 @@ export default async function ServersPage({
 						{currentPage < totalPages && (
 							<PaginationItem>
 								<PaginationNext
-									href={`/servers?page=${currentPage + 1}`}
+									href={`/servers?page=${currentPage + 1}${
+										currentCategory !== 'All'
+											? `&category=${currentCategory}`
+											: ''
+									}${searchQuery ? `&search=${searchQuery}` : ''}`}
 								/>
 							</PaginationItem>
 						)}
