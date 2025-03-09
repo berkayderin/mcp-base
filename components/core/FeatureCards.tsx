@@ -1,107 +1,59 @@
 'use client'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import {
-	Star,
-	MessageSquare,
-	Slack,
-	Chrome,
-	Cloud,
-	Code,
-	Zap,
-	MessageCircle
-} from 'lucide-react'
+import { Star, ExternalLink } from 'lucide-react'
+import { getTopServers } from '@/utils/queries/servers'
 
-interface Card {
+type Card = {
 	id: number
-	title: string
-	by: string
-	description: string
-	icon: string
-	tags: string[]
-	isFeatured?: boolean
+	name: string
+	html_url: string
+	description: string | null
+	language: string | null
+	stars: number
+	categories: string[] | null
 }
-
-const mcpServers: Card[] = [
-	{
-		id: 1,
-		title: 'Mcp Server Chatsum',
-		by: 'chatmcp',
-		description: 'summarize chat message',
-		icon: 'MessageSquare',
-		tags: ['chatbot', 'mcp-server'],
-		isFeatured: true
-	},
-	{
-		id: 2,
-		title: 'Slack',
-		by: '',
-		description: 'Channel management and messaging capabilities',
-		icon: 'Slack',
-		tags: ['slack', 'messaging'],
-		isFeatured: true
-	},
-	{
-		id: 3,
-		title: 'Puppeteer',
-		by: '',
-		description: 'Browser automation and web scraping',
-		icon: 'Chrome',
-		tags: ['browser-automation', 'web-scraping'],
-		isFeatured: true
-	},
-	{
-		id: 4,
-		title: 'Cloudflare',
-		by: '',
-		description:
-			'Deploy, configure & interrogate your resources on the Cloudflare developer platform (e.g. Workers/KV/R2/D1)',
-		icon: 'Cloud',
-		tags: ['cloudflare', 'api-management'],
-		isFeatured: true
-	}
-]
 
 const mcpClients: Card[] = [
 	{
 		id: 1,
-		title: 'Cline - #1 on...',
-		by: 'cline',
+		name: 'Cline - #1 on...',
+		html_url: '#',
 		description:
 			'Autonomous coding agent right in your IDE, capable of creating/editing files, executing commands, using...',
-		icon: 'Code',
-		tags: [],
-		isFeatured: true
+		language: null,
+		stars: 0,
+		categories: []
 	},
 	{
 		id: 2,
-		title: 'Zed',
-		by: 'zed-industries',
+		name: 'Zed',
+		html_url: '#',
 		description:
 			'Code at the speed of thought – Zed is a high-performance, multiplayer code editor from the creators of...',
-		icon: 'Zap',
-		tags: ['rust-lang', 'text-editor'],
-		isFeatured: true
+		language: 'Rust',
+		stars: 0,
+		categories: ['rust-lang', 'text-editor']
 	},
 	{
 		id: 3,
-		title: 'Roo Code (prev. Roo Cline)',
-		by: 'RooVetGit',
+		name: 'Roo Code (prev. Roo Cline)',
+		html_url: '#',
 		description:
 			'Roo Code (prev. Roo Cline) gives you a whole dev team of AI agents in your code editor.',
-		icon: 'Code',
-		tags: [],
-		isFeatured: true
+		language: null,
+		stars: 0,
+		categories: []
 	},
 	{
 		id: 4,
-		title: 'chatmcp',
-		by: 'daodao97',
+		name: 'chatmcp',
+		html_url: '#',
 		description:
 			'ChatMCP is an AI chat client implementing the Model Context Protocol (MCP).',
-		icon: 'MessageCircle',
-		tags: ['chat', 'client'],
-		isFeatured: true
+		language: null,
+		stars: 0,
+		categories: ['chat', 'client']
 	}
 ]
 
@@ -143,7 +95,7 @@ const InfiniteMovingCards = ({
 			if (speed === 'fast') {
 				containerRef.current.style.setProperty(
 					'--animation-duration',
-					'20s'
+					'1s'
 				)
 			} else if (speed === 'medium') {
 				containerRef.current.style.setProperty(
@@ -201,60 +153,48 @@ const InfiniteMovingCards = ({
 			>
 				{items.map((item) => (
 					<li
-						className="relative w-[350px] max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
+						className="relative w-[350px] h-[250px] max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md overflow-hidden"
 						key={item.id}
 					>
 						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-3">
-								<div className="relative h-10 w-10 flex items-center justify-center overflow-hidden rounded-md bg-blue-50">
-									{item.icon === 'MessageSquare' && (
-										<MessageSquare className="h-6 w-6 text-blue-600" />
+							<div>
+								<h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 truncate">
+									{item.name}
+									{item.html_url && (
+										<a
+											href={item.html_url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-blue-500 hover:text-blue-600 flex-shrink-0"
+										>
+											<ExternalLink className="h-4 w-4" />
+										</a>
 									)}
-									{item.icon === 'Slack' && (
-										<Slack className="h-6 w-6 text-blue-600" />
-									)}
-									{item.icon === 'Chrome' && (
-										<Chrome className="h-6 w-6 text-blue-600" />
-									)}
-									{item.icon === 'Cloud' && (
-										<Cloud className="h-6 w-6 text-blue-600" />
-									)}
-									{item.icon === 'Code' && (
-										<Code className="h-6 w-6 text-blue-600" />
-									)}
-									{item.icon === 'Zap' && (
-										<Zap className="h-6 w-6 text-blue-600" />
-									)}
-									{item.icon === 'MessageCircle' && (
-										<MessageCircle className="h-6 w-6 text-blue-600" />
-									)}
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-900">
-										{item.title}
-									</h3>
-									{item.by && (
-										<p className="text-sm text-gray-500">
-											by {item.by}
-										</p>
-									)}
-								</div>
+								</h3>
+								{item.language && (
+									<p className="text-sm text-gray-500">
+										{item.language}
+									</p>
+								)}
 							</div>
-							<button className="text-amber-500 hover:text-amber-600">
-								<Star className="h-5 w-5" />
-							</button>
+							<div className="flex items-center gap-1 text-amber-500 flex-shrink-0">
+								<Star className="h-5 w-5 fill-current" />
+								<span className="text-sm font-medium">
+									{item.stars}
+								</span>
+							</div>
 						</div>
-						<p className="mt-3 text-sm text-gray-600">
+						<p className="mt-3 text-sm text-gray-600 line-clamp-3">
 							{item.description}
 						</p>
-						{item.tags.length > 0 && (
-							<div className="mt-4 flex flex-wrap gap-2">
-								{item.tags.map((tag, index) => (
+						{item.categories && item.categories.length > 0 && (
+							<div className="mt-4 flex flex-wrap gap-2 absolute bottom-6 left-6 right-6">
+								{item.categories.map((category, index) => (
 									<span
 										key={index}
 										className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
 									>
-										# {tag}
+										# {category}
 									</span>
 								))}
 							</div>
@@ -267,6 +207,25 @@ const InfiniteMovingCards = ({
 }
 
 const FeatureCards = () => {
+	const [topServers, setTopServers] = useState<Card[]>([])
+	const [loading, setLoading] = useState(true)
+
+	const fetchTopServers = async () => {
+		try {
+			const servers = await getTopServers(10)
+			setTopServers(servers)
+		} catch (error) {
+			console.error('Error fetching top servers:', error)
+			setTopServers([])
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	useEffect(() => {
+		fetchTopServers()
+	}, [])
+
 	return (
 		<div className="w-full space-y-16 py-12 flex flex-col items-center bg-gray-50 border-t border-slate-200">
 			<div className="space-y-8 w-full max-w-7xl">
@@ -278,11 +237,21 @@ const FeatureCards = () => {
 						View All →
 					</a>
 				</div>
-				<InfiniteMovingCards
-					items={mcpServers}
-					direction="left"
-					speed="slow"
-				/>
+				{loading ? (
+					<div className="flex justify-center items-center h-32">
+						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+					</div>
+				) : topServers.length > 0 ? (
+					<InfiniteMovingCards
+						items={topServers}
+						direction="left"
+						speed="slow"
+					/>
+				) : (
+					<div className="flex justify-center items-center h-32 text-gray-500">
+						Henüz sunucu bulunmamaktadır.
+					</div>
+				)}
 			</div>
 
 			<div className="space-y-8 w-full max-w-7xl">

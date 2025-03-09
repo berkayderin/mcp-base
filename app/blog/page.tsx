@@ -1,6 +1,6 @@
 import React from 'react'
-import BlogCard from '@/features/blog/components/blogCard'
 import { blogPosts } from '@/data/posts'
+import BlogCard from '@/components/core/blog/blogCard'
 
 const BlogPage = () => {
 	return (

@@ -15,7 +15,7 @@ import {
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Search from '@/components/layout/Search'
-import AddServerModal from '@/components/core/AddServerModal'
+import AddServerModal from '../core/modals/AddServerModal'
 
 const Header = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)

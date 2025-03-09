@@ -18,7 +18,7 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Textarea } from '../ui/textarea'
+import { Textarea } from '@/components/ui/textarea'
 
 interface AddServerModalProps {
 	open: boolean
