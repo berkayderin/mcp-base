@@ -19,10 +19,12 @@ CREATE TABLE public.github_repos (
     inserted_at timestamp with time zone default (current_timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul'),
     is_active boolean default true,
     type text check (type in ('Servers', 'Clients')),
+    slug text not null,
     
     -- Constraints
     CONSTRAINT unique_github_repo_id UNIQUE (id),
-    CONSTRAINT unique_github_repo_full_name UNIQUE (full_name)
+    CONSTRAINT unique_github_repo_full_name UNIQUE (full_name),
+    CONSTRAINT unique_github_repo_slug UNIQUE (slug)
 );
 
 -- Clients Schema
@@ -41,10 +43,14 @@ CREATE TABLE public.clients (
     categories text[],
     ai_analysis text,
     inserted_at timestamp with time zone default (current_timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul'),
+    slug text not null,
+    is_active boolean default true,
+    is_mcp boolean default true,
     
     -- Constraints
     CONSTRAINT unique_github_client_id UNIQUE (id),
-    CONSTRAINT unique_github_client_full_name UNIQUE (full_name)
+    CONSTRAINT unique_github_client_full_name UNIQUE (full_name),
+    CONSTRAINT unique_github_client_slug UNIQUE (slug)
 );
 
 -- Servers Schema
@@ -63,10 +69,14 @@ CREATE TABLE public.servers (
     categories text[],
     ai_analysis text,
     inserted_at timestamp with time zone default (current_timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul'),
+    slug text not null,
+    is_active boolean default true,
+    is_mcp boolean default true,
     
     -- Constraints
     CONSTRAINT unique_github_server_id UNIQUE (id),
-    CONSTRAINT unique_github_server_full_name UNIQUE (full_name)
+    CONSTRAINT unique_github_server_full_name UNIQUE (full_name),
+    CONSTRAINT unique_github_server_slug UNIQUE (slug)
 );
 
 ------------ Create all indexes
