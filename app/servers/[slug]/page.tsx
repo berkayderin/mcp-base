@@ -29,7 +29,12 @@ import {
 import { GridPattern } from '@/components/magicui/grid-pattern'
 
 type AnalysisData = {
-	analysis: Record<string, string>
+	is_mcp: string
+	justification: string
+	categories: string[]
+	analysis: {
+		[key: string]: string
+	}
 }
 
 export default async function ServerDetailPage({
@@ -37,13 +42,9 @@ export default async function ServerDetailPage({
 }: {
 	params: { slug: string }
 }) {
-	const serverId = parseInt(params.slug)
+	const slug = params.slug
 
-	if (isNaN(serverId)) {
-		notFound()
-	}
-
-	const server = await getServerById(serverId)
+	const server = await getServerById(slug)
 
 	if (!server) {
 		notFound()
@@ -52,14 +53,20 @@ export default async function ServerDetailPage({
 	let analysisData: AnalysisData | null = null
 	try {
 		if (server.ai_analysis) {
-			const markdownContent = server.ai_analysis
-			const jsonMatch = markdownContent.match(
-				/```(?:json)?\s*(\{[\s\S]*?\})\s*```/
-			)
+			// Doğrudan JSON olarak parse etmeyi dene
+			try {
+				analysisData = JSON.parse(server.ai_analysis)
+			} catch {
+				// Eğer doğrudan parse edemezse, markdown içinden JSON'u çıkar
+				const markdownContent = server.ai_analysis
+				const jsonMatch = markdownContent.match(
+					/```(?:json)?\s*(\{[\s\S]*?\})\s*```/
+				)
 
-			if (jsonMatch && jsonMatch[1]) {
-				const jsonString = jsonMatch[1]
-				analysisData = JSON.parse(jsonString)
+				if (jsonMatch && jsonMatch[1]) {
+					const jsonString = jsonMatch[1]
+					analysisData = JSON.parse(jsonString)
+				}
 			}
 		}
 	} catch (error) {
@@ -67,10 +74,7 @@ export default async function ServerDetailPage({
 	}
 
 	const getFirstTabKey = () => {
-		if (
-			analysisData?.analysis &&
-			Object.keys(analysisData.analysis).length > 0
-		) {
+		if (analysisData?.analysis) {
 			const firstKey = Object.keys(analysisData.analysis)[0]
 			return firstKey.toLowerCase().replace(/\s+/g, '-')
 		}
@@ -211,44 +215,44 @@ export default async function ServerDetailPage({
 									</CardTitle>
 								</CardHeader>
 								<CardContent className="p-0">
-									{analysisData && analysisData.analysis ? (
+									{analysisData?.analysis ? (
 										<Tabs
 											defaultValue={getFirstTabKey()}
 											className="w-full"
 											orientation="vertical"
 										>
 											<div className="flex flex-col md:flex-row">
-												<div className="w-full md:w-64 md:min-w-64 border-r border-orange-100">
+												<div className="w-full md:w-[280px] md:min-w-[280px] border-r border-orange-100">
 													<TabsList className="h-auto flex flex-col items-stretch p-2 bg-orange-50/70 rounded-l-3xl rounded-t-none">
-														{Object.keys(analysisData.analysis).map(
-															(key: string, idx: number) => {
-																const tabValue = createTabValue(key)
-																const keyParts = key.split(' ')
-																const mainTitle = keyParts[0]
-																const subtitle = keyParts
-																	.slice(1)
-																	.join(' ')
+														{Object.entries(
+															analysisData.analysis
+														).map(([key], idx) => {
+															const tabValue = createTabValue(key)
+															const keyParts = key.split(' ')
+															const mainTitle = keyParts[0]
+															const subtitle = keyParts
+																.slice(1)
+																.join(' ')
 
-																return (
-																	<TabsTrigger
-																		key={idx}
-																		value={tabValue}
-																		className="justify-start rounded-lg mb-1 py-3 px-4 data-[state=active]:bg-white data-[state=active]:text-orange-700 data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-gray-200  text-left transition-all"
-																	>
-																		<div className="flex flex-col items-start">
-																			<span className="font-medium text-md">
-																				{mainTitle}
+															return (
+																<TabsTrigger
+																	key={idx}
+																	value={tabValue}
+																	className="justify-start rounded-lg mb-1 py-3 px-4 data-[state=active]:bg-white data-[state=active]:text-orange-700 data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-gray-200 text-left transition-all"
+																>
+																	<div className="flex flex-col items-start">
+																		<span className="font-medium text-md">
+																			{mainTitle}
+																		</span>
+																		{subtitle && (
+																			<span className="text-xs text-slate-500 mt-0.5 truncate max-w-[200px]">
+																				{subtitle}
 																			</span>
-																			{subtitle && (
-																				<span className="text-xs text-slate-500 mt-0.5 truncate max-w-full">
-																					{subtitle}
-																				</span>
-																			)}
-																		</div>
-																	</TabsTrigger>
-																)
-															}
-														)}
+																		)}
+																	</div>
+																</TabsTrigger>
+															)
+														})}
 													</TabsList>
 												</div>
 
@@ -266,9 +270,9 @@ export default async function ServerDetailPage({
 																		<h3 className="font-semibold text-xl text-orange-700 mb-4">
 																			{key}
 																		</h3>
-																		<p className="text-slate-700 leading-relaxed text-lg">
+																		<div className="text-slate-700 leading-relaxed text-lg whitespace-pre-wrap">
 																			{content}
-																		</p>
+																		</div>
 																	</div>
 																</TabsContent>
 															)
@@ -295,7 +299,8 @@ export default async function ServerDetailPage({
 										<BookOpen className="w-8 h-8 text-orange-300" />
 									</div>
 									<p className="text-slate-500 text-lg">
-										No AI analysis available for this repository.
+										No technical analysis available for this
+										repository.
 									</p>
 								</div>
 							</Card>

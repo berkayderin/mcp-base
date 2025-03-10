@@ -9,6 +9,7 @@ export interface ResponseServer {
 	stars: number
 	categories: string[] | null
 	ai_analysis?: string | null
+	slug: string
 }
 
 export async function getTopServers(limit: number = 10) {
@@ -17,7 +18,7 @@ export async function getTopServers(limit: number = 10) {
 	const { data, error } = await supabase
 		.from('servers')
 		.select(
-			'id, name, html_url, description, language, stars, categories'
+			'id, name, html_url, description, language, stars, categories, slug'
 		)
 		.order('stars', { ascending: false })
 		.limit(limit)
@@ -40,29 +41,28 @@ export async function getServersWithPagination(
 	const from = (page - 1) * pageSize
 	const to = from + pageSize - 1
 
-	const { count: totalCount } = await supabase
+	let baseQuery = supabase
 		.from('servers')
 		.select('id', { count: 'exact', head: true })
-
-	let query = supabase
-		.from('servers')
-		.select('id', { count: 'exact', head: true })
+		.eq('is_active', true)
 
 	if (category && category !== 'All') {
-		query = query.contains('categories', [category])
+		baseQuery = baseQuery.contains('categories', [category])
 	}
 
-	const { count: filteredCount, error: countError } = await query
+	const { count: totalCount, error: countError } = await baseQuery
 
 	if (countError) {
+		console.error('Error counting servers:', countError)
 		return { data: [], count: 0, totalCount: 0, totalPages: 0 }
 	}
 
 	let dataQuery = supabase
 		.from('servers')
 		.select(
-			'id, name, html_url, description, language, stars, categories'
+			'id, name, html_url, description, language, stars, categories, slug'
 		)
+		.eq('is_active', true)
 		.order('stars', { ascending: false })
 		.range(from, to)
 
@@ -73,35 +73,43 @@ export async function getServersWithPagination(
 	const { data, error } = await dataQuery
 
 	if (error) {
+		console.error('Error fetching servers:', error)
 		return { data: [], count: 0, totalCount: 0, totalPages: 0 }
 	}
 
-	const totalPages = Math.ceil((filteredCount || 0) / pageSize)
+	const totalPages = Math.ceil((totalCount || 0) / pageSize)
 
 	return {
 		data: data as ResponseServer[],
-		count: filteredCount,
+		count: totalCount,
 		totalCount,
 		totalPages
 	}
 }
 
-export async function getCategoryCounts() {
+interface CategoryCounts {
+	[key: string]: number
+	All: number
+}
+
+export async function getCategoryCounts(): Promise<CategoryCounts> {
 	const supabase = createClient()
 
 	const { data, error } = await supabase
 		.from('servers')
 		.select('categories')
+		.eq('is_active', true)
 
 	if (error) {
 		console.error('Error fetching category counts:', error)
-		return {}
+		return { All: 0 }
 	}
 
-	const categoryCounts: { [key: string]: number } = {}
+	const categoryCounts: CategoryCounts = { All: 0 }
 
 	data.forEach((server) => {
 		if (server.categories) {
+			categoryCounts.All++
 			server.categories.forEach((category: string) => {
 				categoryCounts[category] = (categoryCounts[category] || 0) + 1
 			})
@@ -114,31 +122,55 @@ export async function getCategoryCounts() {
 export async function searchServers(
 	searchQuery: string,
 	page: number = 1,
-	pageSize: number = 15
+	pageSize: number = 15,
+	category?: string
 ) {
 	const supabase = createClient()
 	const from = (page - 1) * pageSize
 	const to = from + pageSize - 1
 
-	const { count: totalCount } = await supabase
+	let baseQuery = supabase
 		.from('servers')
 		.select('id', { count: 'exact', head: true })
+		.eq('is_active', true)
 		.or(
-			`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,language.ilike.%${searchQuery}%`
+			`name.ilike.%${searchQuery}%,` +
+				`description.ilike.%${searchQuery}%,` +
+				`language.ilike.%${searchQuery}%,` +
+				`ai_analysis.ilike.%${searchQuery}%`
 		)
 
-	const query = supabase
+	if (category && category !== 'All') {
+		baseQuery = baseQuery.contains('categories', [category])
+	}
+
+	const { count: totalCount, error: countError } = await baseQuery
+
+	if (countError) {
+		console.error('Error counting search results:', countError)
+		return { data: [], totalCount: 0, totalPages: 0 }
+	}
+
+	let dataQuery = supabase
 		.from('servers')
 		.select(
-			'id, name, html_url, description, language, stars, categories'
+			'id, name, html_url, description, language, stars, categories, slug, ai_analysis'
 		)
+		.eq('is_active', true)
 		.or(
-			`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,language.ilike.%${searchQuery}%`
+			`name.ilike.%${searchQuery}%,` +
+				`description.ilike.%${searchQuery}%,` +
+				`language.ilike.%${searchQuery}%,` +
+				`ai_analysis.ilike.%${searchQuery}%`
 		)
 		.order('stars', { ascending: false })
 		.range(from, to)
 
-	const { data, error } = await query
+	if (category && category !== 'All') {
+		dataQuery = dataQuery.contains('categories', [category])
+	}
+
+	const { data, error } = await dataQuery
 
 	if (error) {
 		console.error('Error searching servers:', error)
@@ -154,21 +186,21 @@ export async function searchServers(
 	}
 }
 
-export async function getServerById(id: number) {
+export async function getServerById(slug: string) {
 	const supabase = createClient()
 
 	const { data, error } = await supabase
 		.from('servers')
 		.select(
-			'id, name, html_url, description, language, stars, categories, ai_analysis'
+			'id, name, html_url, description, language, stars, categories, ai_analysis, slug'
 		)
-		.eq('id', id)
+		.eq('slug', slug)
 		.single()
 
 	if (error) {
-		console.error('Error fetching server by id:', error)
+		console.error('Error fetching server by slug:', error)
 		return null
 	}
 
-	return data as ResponseServer & { ai_analysis?: string }
+	return data as ResponseServer
 }

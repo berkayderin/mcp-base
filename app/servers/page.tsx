@@ -40,12 +40,13 @@ export default async function ServersPage({
 	const currentCategory = searchParams.category || 'All'
 	const searchQuery = searchParams.search || ''
 
-	const {
-		data: servers,
-		totalCount,
-		totalPages
-	} = searchQuery
-		? await searchServers(searchQuery, currentPage)
+	const { data: servers, totalPages } = searchQuery
+		? await searchServers(
+				searchQuery,
+				currentPage,
+				15,
+				currentCategory
+		  )
 		: await getServersWithPagination(currentPage, 15, currentCategory)
 
 	const categoryCounts = await getCategoryCounts()
@@ -64,7 +65,7 @@ export default async function ServersPage({
 						<div className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 inline-flex items-center shadow-sm">
 							<span className="mr-2">🚀</span>
 							<AnimatedShinyText shimmerWidth={150}>
-								+{totalCount || 0} MCP Servers in list
+								+500 MCP Servers in list
 							</AnimatedShinyText>
 						</div>
 					</div>
@@ -128,7 +129,7 @@ export default async function ServersPage({
 							>
 								All{' '}
 								<span className="ml-1 text-orange-500">
-									+{totalCount || 0}
+									+{categoryCounts.All || 0}
 								</span>
 							</Badge>
 						</Link>
@@ -236,7 +237,7 @@ export default async function ServersPage({
 										)}
 								</div>
 								<Link
-									href={`/servers/${server.id}`}
+									href={`/servers/${server.slug}`}
 									className="absolute inset-0"
 									aria-label={`View ${server.name} details`}
 								>
@@ -253,116 +254,107 @@ export default async function ServersPage({
 			</div>
 
 			<div className="mt-10 flex justify-center">
-				<Pagination>
-					<PaginationContent>
-						{currentPage > 1 && (
-							<PaginationItem>
-								<PaginationPrevious
-									href={`/servers?page=${currentPage - 1}${
-										currentCategory !== 'All'
-											? `&category=${currentCategory}`
-											: ''
-									}${searchQuery ? `&search=${searchQuery}` : ''}`}
-								/>
-							</PaginationItem>
-						)}
+				{totalPages > 1 && (
+					<Pagination>
+						<PaginationContent>
+							{/* Önceki Sayfa */}
+							{currentPage > 1 && (
+								<PaginationItem>
+									<PaginationPrevious
+										href={`/servers?page=${currentPage - 1}${
+											currentCategory !== 'All'
+												? `&category=${currentCategory}`
+												: ''
+										}${searchQuery ? `&search=${searchQuery}` : ''}`}
+									/>
+								</PaginationItem>
+							)}
 
-						<PaginationItem>
-							<PaginationLink
-								href={`/servers?page=1${
-									currentCategory !== 'All'
-										? `&category=${currentCategory}`
-										: ''
-								}${searchQuery ? `&search=${searchQuery}` : ''}`}
-								isActive={currentPage === 1}
-							>
-								1
-							</PaginationLink>
-						</PaginationItem>
-
-						{currentPage > 3 && (
-							<PaginationItem>
-								<PaginationEllipsis />
-							</PaginationItem>
-						)}
-
-						{currentPage > 2 && (
+							{/* İlk Sayfa */}
 							<PaginationItem>
 								<PaginationLink
-									href={`/servers?page=${currentPage - 1}${
+									href={`/servers?page=1${
 										currentCategory !== 'All'
 											? `&category=${currentCategory}`
 											: ''
 									}${searchQuery ? `&search=${searchQuery}` : ''}`}
+									isActive={currentPage === 1}
 								>
-									{currentPage - 1}
+									1
 								</PaginationLink>
 							</PaginationItem>
-						)}
 
-						{currentPage !== 1 && currentPage !== totalPages && (
-							<PaginationItem>
-								<PaginationLink
-									href={`/servers?page=${currentPage}${
-										currentCategory !== 'All'
-											? `&category=${currentCategory}`
-											: ''
-									}${searchQuery ? `&search=${searchQuery}` : ''}`}
-									isActive
-								>
-									{currentPage}
-								</PaginationLink>
-							</PaginationItem>
-						)}
+							{/* Sol Ellipsis */}
+							{currentPage > 3 && (
+								<PaginationItem>
+									<PaginationEllipsis />
+								</PaginationItem>
+							)}
 
-						{currentPage < totalPages - 1 && (
-							<PaginationItem>
-								<PaginationLink
-									href={`/servers?page=${currentPage + 1}${
-										currentCategory !== 'All'
-											? `&category=${currentCategory}`
-											: ''
-									}${searchQuery ? `&search=${searchQuery}` : ''}`}
-								>
-									{currentPage + 1}
-								</PaginationLink>
-							</PaginationItem>
-						)}
+							{/* Orta Sayfalar */}
+							{Array.from({ length: totalPages }, (_, i) => i + 1)
+								.filter(
+									(pageNumber) =>
+										pageNumber !== 1 &&
+										pageNumber !== totalPages &&
+										pageNumber >= currentPage - 1 &&
+										pageNumber <= currentPage + 1
+								)
+								.map((pageNumber) => (
+									<PaginationItem key={pageNumber}>
+										<PaginationLink
+											href={`/servers?page=${pageNumber}${
+												currentCategory !== 'All'
+													? `&category=${currentCategory}`
+													: ''
+											}${
+												searchQuery ? `&search=${searchQuery}` : ''
+											}`}
+											isActive={pageNumber === currentPage}
+										>
+											{pageNumber}
+										</PaginationLink>
+									</PaginationItem>
+								))}
 
-						{currentPage < totalPages - 2 && (
-							<PaginationItem>
-								<PaginationEllipsis />
-							</PaginationItem>
-						)}
+							{/* Sağ Ellipsis */}
+							{currentPage < totalPages - 2 && (
+								<PaginationItem>
+									<PaginationEllipsis />
+								</PaginationItem>
+							)}
 
-						{totalPages > 1 && (
-							<PaginationItem>
-								<PaginationLink
-									href={`/servers?page=${totalPages}${
-										currentCategory !== 'All'
-											? `&category=${currentCategory}`
-											: ''
-									}${searchQuery ? `&search=${searchQuery}` : ''}`}
-									isActive={currentPage === totalPages}
-								>
-									{totalPages}
-								</PaginationLink>
-							</PaginationItem>
-						)}
+							{/* Son Sayfa */}
+							{totalPages > 1 && (
+								<PaginationItem>
+									<PaginationLink
+										href={`/servers?page=${totalPages}${
+											currentCategory !== 'All'
+												? `&category=${currentCategory}`
+												: ''
+										}${searchQuery ? `&search=${searchQuery}` : ''}`}
+										isActive={currentPage === totalPages}
+									>
+										{totalPages}
+									</PaginationLink>
+								</PaginationItem>
+							)}
 
-						{currentPage < totalPages && (
-							<PaginationItem>
-								<PaginationNext
-									href={`/servers?page=${currentPage + 1}${
-										currentCategory !== 'All'
-											? `&category=${currentCategory}`
-											: ''
-									}${searchQuery ? `&search=${searchQuery}` : ''}`}
-								/>
-							</PaginationItem>
-						)}
-					</PaginationContent>
-				</Pagination>
+							{/* Sonraki Sayfa */}
+							{currentPage < totalPages && (
+								<PaginationItem>
+									<PaginationNext
+										href={`/servers?page=${currentPage + 1}${
+											currentCategory !== 'All'
+												? `&category=${currentCategory}`
+												: ''
+										}${searchQuery ? `&search=${searchQuery}` : ''}`}
+									/>
+								</PaginationItem>
+							)}
+						</PaginationContent>
+					</Pagination>
+				)}
 			</div>
 		</div>
 	)
