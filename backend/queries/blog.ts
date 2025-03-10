@@ -16,11 +16,11 @@ export async function getAllBlogPosts() {
 	const { data, error } = await supabase
 		.from('blog_posts')
 		.select('*')
-		.order('created_date', { ascending: false })
+		.order('id', { ascending: false })
+		.limit(100)
 
 	if (error) {
-		console.error('Error fetching blog posts:', error)
-		return []
+		return null
 	}
 
 	return data as BlogPost[]

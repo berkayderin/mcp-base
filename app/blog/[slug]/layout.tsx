@@ -11,8 +11,9 @@ export async function generateMetadata({
 
 	if (!post) {
 		return {
-			title: 'Blog Yazısı Bulunamadı | MCP',
-			description: 'Aradığınız blog yazısı bulunamadı.'
+			title: 'Blog Post Not Found | MCP',
+			description:
+				'The blog post you are looking for could not be found.'
 		}
 	}
 
