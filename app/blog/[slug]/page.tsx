@@ -3,11 +3,12 @@ import { notFound } from 'next/navigation'
 import { FaCalendarAlt, FaBookReader } from 'react-icons/fa'
 import { ChevronLeftIcon } from '@radix-ui/react-icons'
 import { getBlogPostBySlug } from '@/backend/queries/blog'
-import Markdown from 'react-markdown'
+import Marked from 'marked-react'
 import Link from 'next/link'
 import { GridPattern } from '@/components/magicui/grid-pattern'
 import { estimateReadingTime } from '@/helpers/estimateReadingTime'
 import ShareButtons from '@/components/core/blog/shareButtons'
+import './blog.css'
 
 async function BlogDetailPage({
 	params
@@ -86,8 +87,8 @@ async function BlogDetailPage({
 					{post.description}
 				</p>
 
-				<div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-orange-500 prose-blockquote:bg-orange-50/50 prose-blockquote:px-4 prose-blockquote:py-1 prose-blockquote:rounded-sm">
-					<Markdown>{post.content}</Markdown>
+				<div className="blog-content">
+					<Marked>{post.content}</Marked>
 				</div>
 
 				<div className="mt-16 pt-6 border-t-2 border-gray-100">
