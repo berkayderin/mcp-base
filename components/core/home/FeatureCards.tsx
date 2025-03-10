@@ -1,8 +1,10 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { Star, ExternalLink } from 'lucide-react'
+import { Star, ArrowRight } from 'lucide-react'
 import { getTopServers } from '@/backend/queries/servers'
+import Link from 'next/link'
+import { FaGithub } from 'react-icons/fa6'
 
 type Card = {
 	id: number
@@ -12,6 +14,7 @@ type Card = {
 	language: string | null
 	stars: number
 	categories: string[] | null
+	slug?: string
 }
 
 const mcpClients: Card[] = [
@@ -139,7 +142,6 @@ const InfiniteMovingCards = ({
 				className
 			)}
 		>
-			{/* Gradient Masks */}
 			<div className="absolute top-0 bottom-0 left-0 w-[100px] z-10 bg-gradient-to-r from-gray-50 to-transparent pointer-events-none" />
 			<div className="absolute top-0 bottom-0 right-0 w-[100px] z-10 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none" />
 
@@ -156,20 +158,19 @@ const InfiniteMovingCards = ({
 						className="relative w-[350px] h-[250px] max-w-full flex-shrink-0 cursor-pointer rounded-2xl border border-gray-200 bg-white px-6 py-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md overflow-hidden"
 						key={item.id}
 					>
-						<div className="flex items-center justify-between">
+						<div className="flex items-center justify-between relative z-20">
 							<div>
 								<h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 truncate">
 									{item.name}
-									{item.html_url && (
-										<a
-											href={item.html_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-blue-500 hover:text-blue-600 flex-shrink-0"
-										>
-											<ExternalLink className="h-4 w-4" />
-										</a>
-									)}
+									<a
+										href={item.html_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-gray-500 hover:text-gray-700 flex-shrink-0 inline-flex items-center gap-1"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<FaGithub className="h-4 w-4" />
+									</a>
 								</h3>
 								{item.language && (
 									<p className="text-sm text-gray-500">
@@ -199,6 +200,10 @@ const InfiniteMovingCards = ({
 								))}
 							</div>
 						)}
+						<Link
+							href={`/servers/${item.slug}`}
+							className="absolute inset-0 z-10"
+						></Link>
 					</li>
 				))}
 			</ul>
@@ -233,9 +238,13 @@ const FeatureCards = () => {
 					<h2 className="text-2xl font-bold text-gray-900">
 						Featured MCP Servers
 					</h2>
-					<a href="#" className="text-orange-500 hover:underline">
-						View All →
-					</a>
+					<Link
+						href="/servers"
+						className="group flex items-center gap-2 px-4 py-1.5 rounded-md bg-white text-orange-500 border border-orange-200 hover:border-orange-400 transition-all duration-200 text-sm font-medium"
+					>
+						View All
+						<ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
+					</Link>
 				</div>
 				{loading ? (
 					<div className="flex justify-center items-center h-32">
@@ -249,7 +258,7 @@ const FeatureCards = () => {
 					/>
 				) : (
 					<div className="flex justify-center items-center h-32 text-gray-500">
-						Henüz sunucu bulunmamaktadır.
+						No servers found
 					</div>
 				)}
 			</div>
@@ -259,9 +268,13 @@ const FeatureCards = () => {
 					<h2 className="text-2xl font-bold text-gray-900">
 						Featured MCP Clients
 					</h2>
-					<a href="#" className="text-orange-500 hover:underline">
-						View All →
-					</a>
+					<Link
+						href="/clients"
+						className="group flex items-center gap-2 px-4 py-1.5 rounded-md bg-white text-orange-500 border border-orange-200 hover:border-orange-400 transition-all duration-200 text-sm font-medium"
+					>
+						View All
+						<ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
+					</Link>
 				</div>
 				<InfiniteMovingCards
 					items={mcpClients}

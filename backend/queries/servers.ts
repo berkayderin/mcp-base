@@ -20,6 +20,7 @@ export async function getTopServers(limit: number = 10) {
 		.select(
 			'id, name, html_url, description, language, stars, categories, slug'
 		)
+		.eq('is_active', true)
 		.order('stars', { ascending: false })
 		.limit(limit)
 
