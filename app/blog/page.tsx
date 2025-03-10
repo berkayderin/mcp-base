@@ -34,7 +34,7 @@ export default async function BlogPage() {
 
 			<div className="container mx-auto px-6 max-w-4xl relative z-10">
 				<div className="space-y-12">
-					{posts.map((post) => {
+					{posts?.map((post) => {
 						const readingTime = estimateReadingTime(post.content)
 
 						return (
