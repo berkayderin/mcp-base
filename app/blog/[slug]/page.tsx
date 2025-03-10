@@ -1,97 +1,115 @@
-'use client'
-
 import React from 'react'
-import { blogPosts } from '@/data/posts'
 import { notFound } from 'next/navigation'
-import { FaCalendarAlt } from 'react-icons/fa'
-import { FaXTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa6'
+import { FaCalendarAlt, FaBookReader } from 'react-icons/fa'
+import { ChevronLeftIcon } from '@radix-ui/react-icons'
+import { getBlogPostBySlug } from '@/backend/queries/blog'
+import Markdown from 'react-markdown'
+import Link from 'next/link'
+import { GridPattern } from '@/components/magicui/grid-pattern'
+import { estimateReadingTime } from '@/helpers/estimateReadingTime'
+import ShareButtons from '@/components/core/blog/shareButtons'
 
-type SharePlatform = 'twitter' | 'linkedin' | 'whatsapp'
-
-const BlogDetailPage = ({ params }: { params: { slug: string } }) => {
-	const post = blogPosts.find((post) => post.slug === params.slug)
+async function BlogDetailPage({
+	params
+}: {
+	params: { slug: string }
+}) {
+	const post = await getBlogPostBySlug(params.slug)
 
 	if (!post) {
 		notFound()
 	}
 
 	const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${params.slug}`
-
-	const handleShare = (platform: SharePlatform) => {
-		const text = encodeURIComponent(post.title)
-		const url = encodeURIComponent(shareUrl)
-
-		const shareLinks = {
-			twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-			linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-			whatsapp: `https://wa.me/?text=${text}%20${url}`
-		}
-
-		window.open(shareLinks[platform], '_blank', 'noopener,noreferrer')
-	}
+	const readingTime = estimateReadingTime(post.content)
 
 	return (
-		<div className="container mx-auto px-6 py-12 max-w-4xl">
-			<div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-				<span>{post.keyword}</span>
+		<main className="relative w-full bg-white min-h-screen">
+			<GridPattern
+				className="absolute inset-0 opacity-70"
+				width={30}
+				height={30}
+				strokeDasharray="1 3"
+			/>
+
+			<div className="container mx-auto px-6 pt-8 max-w-3xl relative z-10">
+				<Link
+					href="/blog"
+					className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 group"
+				>
+					<ChevronLeftIcon className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+					Back to Blog
+				</Link>
 			</div>
 
-			<h1 className="text-4xl font-bold mb-6">{post.title}</h1>
-
-			<div className="flex items-center gap-4 mb-8">
-				<div className="flex items-center gap-1">
-					<FaCalendarAlt size={14} />
-					<span className="text-sm text-gray-600">{post.date}</span>
+			<article className="container mx-auto px-6 py-8 max-w-3xl relative z-10">
+				<div className="mb-6 flex flex-wrap gap-2">
+					{post.keywords.map((keyword, index) => (
+						<span
+							key={index}
+							className="text-xs uppercase tracking-wider font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-orange-500/10 to-pink-500/10 text-orange-600"
+						>
+							{keyword}
+						</span>
+					))}
 				</div>
 
-				<div className="flex items-center gap-2">
-					<button
-						onClick={() => handleShare('twitter')}
-						className="p-2 rounded-full bg-black hover:bg-gray-800 text-white transition-colors"
-					>
-						<FaXTwitter size={18} />
-					</button>
+				<h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight">
+					{post.title}
+				</h1>
 
-					<button
-						onClick={() => handleShare('linkedin')}
-						className="p-2 rounded-full bg-[#0077b5] hover:bg-[#006396] text-white transition-colors"
-					>
-						<FaLinkedin size={18} />
-					</button>
-
-					<button
-						onClick={() => handleShare('whatsapp')}
-						className="p-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white transition-colors"
-					>
-						<FaWhatsapp size={18} />
-					</button>
+				<div className="flex flex-wrap items-center gap-4 mb-8 text-sm text-gray-500 pb-6 border-b-2 border-gray-100">
+					<div className="flex items-center gap-1">
+						<FaCalendarAlt size={14} className="text-orange-500" />
+						<span>
+							{new Date(post.created_date).toLocaleDateString(
+								'en-US',
+								{
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric'
+								}
+							)}
+						</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<FaBookReader size={14} className="text-orange-500" />
+						<span>{readingTime} min read</span>
+					</div>
+					<div className="flex items-center gap-2 ml-auto">
+						<span className="text-sm text-gray-500">Share:</span>
+						<ShareButtons post={post} shareUrl={shareUrl} />
+					</div>
 				</div>
-			</div>
 
-			<div className="prose max-w-none">
-				<p className="text-gray-700 mb-6">{post.description}</p>
-
-				<h2 className="text-2xl font-semibold mt-10 mb-4">
-					What does a career in web design involve?
-				</h2>
-				<p className="text-gray-700 mb-6">
-					A career in web design can involve the design, creation, and
-					coding of a range of website types. These pages can
-					typically include having both clients and discussing
-					specific specifications, producing sample sites, designing
-					layouts, writing code, and working with different content
-					management systems and apps. Requiring a range of creative
-					and technical skills, web designers may be involved in work
-					across a range of industries, including software companies,
-					IT consultancies, web design agencies, and marketing
-					companies. Web designers typically need to have skills in
-					programming languages, creative skills, crafting the overall
-					vision and design of a site, and determining how to best
-					incorporate content and functionality. However, there can be
-					significant overlap between the roles.
+				<p className="text-xl text-gray-700 mb-8 leading-relaxed">
+					{post.description}
 				</p>
-			</div>
-		</div>
+
+				<div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-orange-500 prose-blockquote:bg-orange-50/50 prose-blockquote:px-4 prose-blockquote:py-1 prose-blockquote:rounded-sm">
+					<Markdown>{post.content}</Markdown>
+				</div>
+
+				<div className="mt-16 pt-6 border-t-2 border-gray-100">
+					<div className="flex flex-wrap items-center justify-between gap-4">
+						<Link
+							href="/blog"
+							className="text-sm text-gray-600 hover:text-gray-900 group inline-flex items-center"
+						>
+							<ChevronLeftIcon className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+							Back to Blog
+						</Link>
+
+						<div className="flex items-center gap-3">
+							<span className="text-sm text-gray-500">
+								Share this article:
+							</span>
+							<ShareButtons post={post} shareUrl={shareUrl} />
+						</div>
+					</div>
+				</div>
+			</article>
+		</main>
 	)
 }
 
