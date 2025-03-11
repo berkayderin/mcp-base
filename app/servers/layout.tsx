@@ -4,7 +4,7 @@ import React from 'react'
 export const metadata: Metadata = {
 	title: 'Servers | Model Context Protocol | MCP',
 	description:
-		'Discover the latest handpicked blog entries to get started.'
+		'Discover the latest handpicked servers to get started.'
 }
 
 const ServersLayout = ({
