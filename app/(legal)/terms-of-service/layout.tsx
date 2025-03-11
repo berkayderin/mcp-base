@@ -1,18 +1,18 @@
-import { Metadata } from 'next'
-import React from 'react'
+import React from 'react';
+
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-	title: 'Terms of Service | Model Context Protocol | MCP',
-	description:
-		'Discover the latest handpicked blog entries to get started.'
-}
+  title: 'Terms of Service | Model Context Protocol | MCP',
+  description: 'Discover the latest handpicked blog entries to get started.',
+};
 
 const TermsOfServiceLayout = ({
-	children
+  children,
 }: Readonly<{
-	children: React.ReactNode
+  children: React.ReactNode;
 }>) => {
-	return <div>{children}</div>
-}
+  return <div>{children}</div>;
+};
 
-export default TermsOfServiceLayout
+export default TermsOfServiceLayout;

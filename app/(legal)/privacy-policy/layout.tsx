@@ -1,18 +1,18 @@
-import { Metadata } from 'next'
-import React from 'react'
+import React from 'react';
+
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-	title: 'Privacy Policy | Model Context Protocol | MCP',
-	description:
-		'Discover the latest handpicked blog entries to get started.'
-}
+  title: 'Privacy Policy | Model Context Protocol | MCP',
+  description: 'Discover the latest handpicked blog entries to get started.',
+};
 
 const PrivacyPolicyLayout = ({
-	children
+  children,
 }: Readonly<{
-	children: React.ReactNode
+  children: React.ReactNode;
 }>) => {
-	return <div>{children}</div>
-}
+  return <div>{children}</div>;
+};
 
-export default PrivacyPolicyLayout
+export default PrivacyPolicyLayout;

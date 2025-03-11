@@ -1,18 +1,18 @@
-import { Metadata } from 'next'
-import React from 'react'
+import React from 'react';
+
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-	title: 'Servers | Model Context Protocol | MCP',
-	description:
-		'Discover the latest handpicked servers to get started.'
-}
+  title: 'Servers | Model Context Protocol | MCP',
+  description: 'Discover the latest handpicked servers to get started.',
+};
 
 const ServersLayout = ({
-	children
+  children,
 }: Readonly<{
-	children: React.ReactNode
+  children: React.ReactNode;
 }>) => {
-	return <div>{children}</div>
-}
+  return <div>{children}</div>;
+};
 
-export default ServersLayout
+export default ServersLayout;

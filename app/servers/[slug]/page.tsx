@@ -1,311 +1,263 @@
-import React from 'react'
-import { notFound } from 'next/navigation'
-import ReactMarkdown from 'react-markdown'
-import { Badge } from '@/components/ui/badge'
-import { getServerById } from '@/backend/queries/servers'
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle
-} from '@/components/ui/card'
-import {
-	Star,
-	Code,
-	ExternalLink,
-	ArrowLeft,
-	BookOpen,
-	Zap,
-	BarChart3
-} from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger
-} from '@/components/ui/tabs'
-import { GridPattern } from '@/components/magicui/grid-pattern'
+import React from 'react';
+
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { GridPattern } from '@/components/magicui/grid-pattern';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { getServerById } from '@/backend/queries/servers';
+
+import { ArrowLeft, BarChart3, BookOpen, Code, ExternalLink, Star, Zap } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 type AnalysisData = {
-	is_mcp: string
-	justification: string
-	categories: string[]
-	analysis: {
-		[key: string]: string
-	}
-}
+  is_mcp: string;
+  justification: string;
+  categories: string[];
+  analysis: {
+    [key: string]: string;
+  };
+};
 
-export default async function ServerDetailPage({
-	params
-}: {
-	params: { slug: string }
-}) {
-	const slug = params.slug
+export default async function ServerDetailPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug;
 
-	const server = await getServerById(slug)
+  const server = await getServerById(slug);
 
-	if (!server) {
-		notFound()
-	}
+  if (!server) {
+    notFound();
+  }
 
-	let analysisData: AnalysisData | null = null
-	try {
-		if (server.ai_analysis) {
-			try {
-				analysisData = JSON.parse(server.ai_analysis)
-			} catch {
-				const markdownContent = server.ai_analysis
-				const jsonMatch = markdownContent.match(
-					/```(?:json)?\s*(\{[\s\S]*?\})\s*```/
-				)
+  let analysisData: AnalysisData | null = null;
+  try {
+    if (server.ai_analysis) {
+      try {
+        analysisData = JSON.parse(server.ai_analysis);
+      } catch {
+        const markdownContent = server.ai_analysis;
+        const jsonMatch = markdownContent.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
 
-				if (jsonMatch && jsonMatch[1]) {
-					const jsonString = jsonMatch[1]
-					analysisData = JSON.parse(jsonString)
-				}
-			}
-		}
-	} catch (error) {
-		console.error('JSON parsing error:', error)
-	}
+        if (jsonMatch && jsonMatch[1]) {
+          const jsonString = jsonMatch[1];
+          analysisData = JSON.parse(jsonString);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('JSON parsing error:', error);
+  }
 
-	const getFirstTabKey = () => {
-		if (analysisData?.analysis) {
-			const firstKey = Object.keys(analysisData.analysis)[0]
-			return firstKey.toLowerCase().replace(/\s+/g, '-')
-		}
-		return 'default-tab'
-	}
+  const getFirstTabKey = () => {
+    if (analysisData?.analysis) {
+      const firstKey = Object.keys(analysisData.analysis)[0];
+      return firstKey.toLowerCase().replace(/\s+/g, '-');
+    }
+    return 'default-tab';
+  };
 
-	const createTabValue = (key: string) => {
-		return key.toLowerCase().replace(/\s+/g, '-')
-	}
+  const createTabValue = (key: string) => {
+    return key.toLowerCase().replace(/\s+/g, '-');
+  };
 
-	return (
-		<div className="relative min-h-screen">
-			<div className="absolute inset-0 -z-10 overflow-hidden opacity-70">
-				<GridPattern
-					width={36}
-					height={36}
-					x={-1}
-					y={-1}
-					className="absolute inset-0 h-full w-full fill-orange-50 stroke-orange-100 [mask-image:radial-gradient(ellipse_at_center,white_40%,transparent_80%)]"
-					strokeDasharray="2 4"
-					strokeWidth={1.5}
-				/>
-			</div>
+  return (
+    <div className="relative min-h-screen">
+      <div className="absolute inset-0 -z-10 overflow-hidden opacity-70">
+        <GridPattern
+          width={36}
+          height={36}
+          x={-1}
+          y={-1}
+          className="absolute inset-0 h-full w-full fill-orange-50 stroke-orange-100 [mask-image:radial-gradient(ellipse_at_center,white_40%,transparent_80%)]"
+          strokeDasharray="2 4"
+          strokeWidth={1.5}
+        />
+      </div>
 
-			<div className="container mx-auto px-4 py-12 relative z-10 max-w-7xl">
-				<div className="mb-8">
-					<Link href="/servers" className="inline-block">
-						<Button
-							variant="ghost"
-							className="group flex items-center gap-1.5 text-gray-600 hover:text-gray-900"
-						>
-							<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-							Back to servers
-						</Button>
-					</Link>
-				</div>
+      <div className="container relative z-10 mx-auto max-w-7xl px-4 py-12">
+        <div className="mb-8">
+          <Link href="/servers" className="inline-block">
+            <Button
+              variant="ghost"
+              className="group flex items-center gap-1.5 text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Back to servers
+            </Button>
+          </Link>
+        </div>
 
-				<div className="bg-white backdrop-blur-sm rounded-3xl p-8 mb-10 overflow-hidden relative border border-gray-200">
-					<div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100 via-rose-50 to-transparent rounded-bl-full opacity-70 -z-10"></div>
+        <div className="relative mb-10 overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 backdrop-blur-sm">
+          <div className="absolute right-0 top-0 -z-10 h-64 w-64 rounded-bl-full bg-gradient-to-bl from-orange-100 via-rose-50 to-transparent opacity-70"></div>
 
-					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-						<div className="flex items-start gap-6">
-							<div className="w-20 h-20 bg-gradient-to-tr from-orange-500 via-rose-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-orange-200 ring-4 ring-orange-50">
-								{server.language
-									? server.language[0].toUpperCase()
-									: '🚀'}
-							</div>
-							<div>
-								<h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-pink-600">
-									{server.name}
-								</h1>
-								<p className="text-slate-600 mt-3 max-w-3xl text-lg">
-									{server.description || 'No description available'}
-								</p>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-6">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-orange-500 via-rose-500 to-pink-500 text-2xl font-bold text-white shadow-lg shadow-orange-200 ring-4 ring-orange-50">
+                {server.language ? server.language[0].toUpperCase() : '🚀'}
+              </div>
+              <div>
+                <h1 className="bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
+                  {server.name}
+                </h1>
+                <p className="mt-3 max-w-3xl text-lg text-slate-600">
+                  {server.description || 'No description available'}
+                </p>
 
-								{server.categories &&
-									server.categories.length > 0 && (
-										<div className="flex flex-wrap gap-2 mt-5">
-											{server.categories.map((category, index) => (
-												<Badge
-													key={index}
-													variant="secondary"
-													className="px-3 py-1 bg-gradient-to-r from-orange-50 to-rose-50 text-orange-700 border-0 shadow-sm rounded-full text-xs font-medium"
-												>
-													{category}
-												</Badge>
-											))}
-										</div>
-									)}
-							</div>
-						</div>
-					</div>
-				</div>
+                {server.categories && server.categories.length > 0 && (
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {server.categories.map((category, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="rounded-full border-0 bg-gradient-to-r from-orange-50 to-rose-50 px-3 py-1 text-xs font-medium text-orange-700 shadow-sm"
+                      >
+                        {category}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-					<div className="lg:col-span-1 space-y-6">
-						<Card className="overflow-hidden border border-gray-200 rounded-3xl shadow-none">
-							<CardHeader className="bg-gradient-to-r from-white to-orange-50/50 border-b pb-6">
-								<CardTitle className="text-xl flex items-center gap-2 text-orange-800">
-									<BarChart3 className="w-5 h-5 text-orange-500" />
-									Repository Details
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="p-0">
-								<div className="divide-y divide-orange-50">
-									<div className="px-6 py-5 flex justify-between items-center hover:bg-orange-50/30 transition-colors">
-										<div className="text-slate-600 font-medium">
-											Language
-										</div>
-										{server.language ? (
-											<div className="flex items-center gap-2 font-medium text-orange-700">
-												<Code className="w-4 h-4" />
-												{server.language}
-											</div>
-										) : (
-											<div className="text-gray-500">
-												Not specified
-											</div>
-										)}
-									</div>
-									<div className="px-6 py-5 flex justify-between items-center hover:bg-orange-50/30 transition-colors">
-										<div className="text-slate-600 font-medium">
-											Repository
-										</div>
-										<a
-											href={server.html_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex items-center gap-1.5 text-orange-600 hover:text-orange-800 font-medium transition-colors"
-										>
-											{server.name.length > 20
-												? `${server.name.substring(0, 20)}...`
-												: server.name}
-											<ExternalLink className="w-3.5 h-3.5" />
-										</a>
-									</div>
-									<div className="px-6 py-5 flex justify-between items-center hover:bg-orange-50/30 transition-colors">
-										<div className="text-slate-600 font-medium">
-											Stars
-										</div>
-										<div className="flex items-center gap-2 font-medium bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-											<Star className="w-5 h-5 fill-amber-400 text-amber-500" />
-											{server.stars.toLocaleString()}
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-1">
+            <Card className="overflow-hidden rounded-3xl border border-gray-200 shadow-none">
+              <CardHeader className="border-b bg-gradient-to-r from-white to-orange-50/50 pb-6">
+                <CardTitle className="flex items-center gap-2 text-xl text-orange-800">
+                  <BarChart3 className="h-5 w-5 text-orange-500" />
+                  Repository Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y divide-orange-50">
+                  <div className="flex items-center justify-between px-6 py-5 transition-colors hover:bg-orange-50/30">
+                    <div className="font-medium text-slate-600">Language</div>
+                    {server.language ? (
+                      <div className="flex items-center gap-2 font-medium text-orange-700">
+                        <Code className="h-4 w-4" />
+                        {server.language}
+                      </div>
+                    ) : (
+                      <div className="text-gray-500">Not specified</div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between px-6 py-5 transition-colors hover:bg-orange-50/30">
+                    <div className="font-medium text-slate-600">Repository</div>
+                    <a
+                      href={server.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 font-medium text-orange-600 transition-colors hover:text-orange-800"
+                    >
+                      {server.name.length > 20 ? `${server.name.substring(0, 20)}...` : server.name}
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between px-6 py-5 transition-colors hover:bg-orange-50/30">
+                    <div className="font-medium text-slate-600">Stars</div>
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text font-medium text-transparent">
+                      <Star className="h-5 w-5 fill-amber-400 text-amber-500" />
+                      {server.stars.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-					<div className="lg:col-span-2">
-						{server.ai_analysis ? (
-							<Card className="border border-gray-200 rounded-3xl shadow-none">
-								<CardHeader className="bg-gradient-to-r from-white to-orange-50/50 border-b pb-6 rounded-t-3xl">
-									<CardTitle className="text-xl flex items-center gap-2 text-orange-800">
-										<Zap className="w-5 h-5 text-orange-500" />
-										AI Analysis
-									</CardTitle>
-								</CardHeader>
-								<CardContent className="p-0">
-									{analysisData?.analysis ? (
-										<Tabs
-											defaultValue={getFirstTabKey()}
-											className="w-full"
-											orientation="vertical"
-										>
-											<div className="flex flex-col md:flex-row">
-												<div className="w-full md:w-[280px] md:min-w-[280px] border-r border-orange-100">
-													<TabsList className="h-auto flex flex-col items-stretch p-2 bg-orange-50/70 rounded-l-3xl rounded-t-none">
-														{Object.entries(
-															analysisData.analysis
-														).map(([key], idx) => {
-															const tabValue = createTabValue(key)
-															const keyParts = key.split(' ')
-															const mainTitle = keyParts[0]
-															const subtitle = keyParts
-																.slice(1)
-																.join(' ')
+          <div className="lg:col-span-2">
+            {server.ai_analysis ? (
+              <Card className="rounded-3xl border border-gray-200 shadow-none">
+                <CardHeader className="rounded-t-3xl border-b bg-gradient-to-r from-white to-orange-50/50 pb-6">
+                  <CardTitle className="flex items-center gap-2 text-xl text-orange-800">
+                    <Zap className="h-5 w-5 text-orange-500" />
+                    AI Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {analysisData?.analysis ? (
+                    <Tabs defaultValue={getFirstTabKey()} className="w-full" orientation="vertical">
+                      <div className="flex flex-col md:flex-row">
+                        <div className="w-full border-r border-orange-100 md:w-[280px] md:min-w-[280px]">
+                          <TabsList className="flex h-auto flex-col items-stretch rounded-l-3xl rounded-t-none bg-orange-50/70 p-2">
+                            {Object.entries(analysisData.analysis).map(([key], idx) => {
+                              const tabValue = createTabValue(key);
+                              const keyParts = key.split(' ');
+                              const mainTitle = keyParts[0];
+                              const subtitle = keyParts.slice(1).join(' ');
 
-															return (
-																<TabsTrigger
-																	key={idx}
-																	value={tabValue}
-																	className="justify-start rounded-lg mb-1 py-3 px-4 data-[state=active]:bg-white data-[state=active]:text-orange-700 data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-gray-200 text-left transition-all"
-																>
-																	<div className="flex flex-col items-start">
-																		<span className="font-medium text-md">
-																			{mainTitle}
-																		</span>
-																		{subtitle && (
-																			<span className="text-xs text-slate-500 mt-0.5 truncate max-w-[200px]">
-																				{subtitle}
-																			</span>
-																		)}
-																	</div>
-																</TabsTrigger>
-															)
-														})}
-													</TabsList>
-												</div>
+                              return (
+                                <TabsTrigger
+                                  key={idx}
+                                  value={tabValue}
+                                  className="mb-1 justify-start rounded-lg px-4 py-3 text-left transition-all data-[state=active]:border data-[state=active]:border-gray-200 data-[state=active]:bg-white data-[state=active]:text-orange-700 data-[state=active]:shadow-none"
+                                >
+                                  <div className="flex flex-col items-start">
+                                    <span className="text-md font-medium">{mainTitle}</span>
+                                    {subtitle && (
+                                      <span className="mt-0.5 max-w-[200px] truncate text-xs text-slate-500">
+                                        {subtitle}
+                                      </span>
+                                    )}
+                                  </div>
+                                </TabsTrigger>
+                              );
+                            })}
+                          </TabsList>
+                        </div>
 
-												<div className="flex-1 p-8 bg-white rounded-r-3xl">
-													{Object.entries(analysisData.analysis).map(
-														([key, content]) => {
-															const tabValue = createTabValue(key)
-															return (
-																<TabsContent
-																	key={key}
-																	value={tabValue}
-																	className="mt-0 data-[state=active]:animate-in data-[state=active]:fade-in-50 h-full"
-																>
-																	<div className="h-full">
-																		<h3 className="font-semibold text-xl text-orange-700 mb-4">
-																			{key}
-																		</h3>
-																		<div className="text-slate-700 leading-relaxed text-lg whitespace-pre-wrap">
-																			{content}
-																		</div>
-																	</div>
-																</TabsContent>
-															)
-														}
-													)}
-												</div>
-											</div>
-										</Tabs>
-									) : (
-										<div className="p-8">
-											<div className="prose max-w-none text-slate-700">
-												<ReactMarkdown>
-													{server.ai_analysis}
-												</ReactMarkdown>
-											</div>
-										</div>
-									)}
-								</CardContent>
-							</Card>
-						) : (
-							<Card className="p-8 bg-white flex justify-center items-center h-full border-0 rounded-3xl shadow-[0_15px_50px_-15px_rgba(249,115,22,0.2)] backdrop-blur-sm overflow-hidden">
-								<div className="text-center">
-									<div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
-										<BookOpen className="w-8 h-8 text-orange-300" />
-									</div>
-									<p className="text-slate-500 text-lg">
-										No technical analysis available for this
-										repository.
-									</p>
-								</div>
-							</Card>
-						)}
-					</div>
-				</div>
-			</div>
-		</div>
-	)
+                        <div className="flex-1 rounded-r-3xl bg-white p-8">
+                          {Object.entries(analysisData.analysis).map(([key, content]) => {
+                            const tabValue = createTabValue(key);
+                            return (
+                              <TabsContent
+                                key={key}
+                                value={tabValue}
+                                className="mt-0 h-full data-[state=active]:animate-in data-[state=active]:fade-in-50"
+                              >
+                                <div className="h-full">
+                                  <h3 className="mb-4 text-xl font-semibold text-orange-700">
+                                    {key}
+                                  </h3>
+                                  <div className="whitespace-pre-wrap text-lg leading-relaxed text-slate-700">
+                                    {content}
+                                  </div>
+                                </div>
+                              </TabsContent>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </Tabs>
+                  ) : (
+                    <div className="p-8">
+                      <div className="prose max-w-none text-slate-700">
+                        <ReactMarkdown>{server.ai_analysis}</ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="flex h-full items-center justify-center overflow-hidden rounded-3xl border-0 bg-white p-8 shadow-[0_15px_50px_-15px_rgba(249,115,22,0.2)] backdrop-blur-sm">
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
+                    <BookOpen className="h-8 w-8 text-orange-300" />
+                  </div>
+                  <p className="text-lg text-slate-500">
+                    No technical analysis available for this repository.
+                  </p>
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -1,53 +1,49 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { FaXTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa6'
-import type { BlogPost } from '@/backend/queries/blog'
+import React from 'react';
 
-type SharePlatform = 'twitter' | 'linkedin' | 'whatsapp'
+import type { BlogPost } from '@/backend/queries/blog';
 
-export default function ShareButtons({
-	post,
-	shareUrl
-}: {
-	post: BlogPost
-	shareUrl: string
-}) {
-	const handleShare = (platform: SharePlatform) => {
-		const text = encodeURIComponent(post.title)
-		const url = encodeURIComponent(shareUrl)
+import { FaLinkedin, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
 
-		const shareLinks = {
-			twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-			linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-			whatsapp: `https://wa.me/?text=${text}%20${url}`
-		}
+type SharePlatform = 'twitter' | 'linkedin' | 'whatsapp';
 
-		window.open(shareLinks[platform], '_blank', 'noopener,noreferrer')
-	}
+export default function ShareButtons({ post, shareUrl }: { post: BlogPost; shareUrl: string }) {
+  const handleShare = (platform: SharePlatform) => {
+    const text = encodeURIComponent(post.title);
+    const url = encodeURIComponent(shareUrl);
 
-	return (
-		<>
-			<button
-				onClick={() => handleShare('twitter')}
-				className="p-2 rounded-full bg-black hover:bg-gray-800 text-white transition-colors"
-			>
-				<FaXTwitter size={18} />
-			</button>
+    const shareLinks = {
+      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+    };
 
-			<button
-				onClick={() => handleShare('linkedin')}
-				className="p-2 rounded-full bg-[#0077b5] hover:bg-[#006396] text-white transition-colors"
-			>
-				<FaLinkedin size={18} />
-			</button>
+    window.open(shareLinks[platform], '_blank', 'noopener,noreferrer');
+  };
 
-			<button
-				onClick={() => handleShare('whatsapp')}
-				className="p-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white transition-colors"
-			>
-				<FaWhatsapp size={18} />
-			</button>
-		</>
-	)
+  return (
+    <>
+      <button
+        onClick={() => handleShare('twitter')}
+        className="rounded-full bg-black p-2 text-white transition-colors hover:bg-gray-800"
+      >
+        <FaXTwitter size={18} />
+      </button>
+
+      <button
+        onClick={() => handleShare('linkedin')}
+        className="rounded-full bg-[#0077b5] p-2 text-white transition-colors hover:bg-[#006396]"
+      >
+        <FaLinkedin size={18} />
+      </button>
+
+      <button
+        onClick={() => handleShare('whatsapp')}
+        className="rounded-full bg-[#25D366] p-2 text-white transition-colors hover:bg-[#20bd5a]"
+      >
+        <FaWhatsapp size={18} />
+      </button>
+    </>
+  );
 }
