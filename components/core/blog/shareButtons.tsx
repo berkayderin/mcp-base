@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import type { ResponseBlogPost } from '@/backend/queries/blog';
+import { ResponseBlogPost } from '@/backend/types/types';
 
 import { FaLinkedin, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
 

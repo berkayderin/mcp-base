@@ -1,5 +1,6 @@
 import { createClient } from '@/backend/supabase/client';
-import { ResponseBlogPost } from '@/backend/types/types';
+
+import { ResponseBlogPost } from '../types/types';
 
 export async function getAllBlogPosts() {
   const supabase = createClient();
