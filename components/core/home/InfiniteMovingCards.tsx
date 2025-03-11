@@ -2,11 +2,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
+import { Card } from '@/backend/types/types';
+
 import { cn } from '@/lib/utils';
-import { Card } from '@/types/types';
 
 import { Star } from 'lucide-react';
 import { FaGithub } from 'react-icons/fa6';
+
+type InfiniteMovingCardsProps = {
+  items: Card[];
+  direction?: 'left' | 'right';
+  speed?: 'slow' | 'medium' | 'fast';
+  pauseOnHover?: boolean;
+  className?: string;
+  type?: 'servers' | 'clients';
+};
 
 const InfiniteMovingCards = ({
   items,
@@ -15,14 +25,7 @@ const InfiniteMovingCards = ({
   pauseOnHover = true,
   className,
   type = 'servers',
-}: {
-  items: Card[];
-  direction?: 'left' | 'right';
-  speed?: 'slow' | 'medium' | 'fast';
-  pauseOnHover?: boolean;
-  className?: string;
-  type?: 'servers' | 'clients';
-}) => {
+}: InfiniteMovingCardsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLUListElement>(null);
   const [start, setStart] = useState(false);

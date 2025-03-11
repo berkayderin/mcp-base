@@ -1,14 +1,5 @@
-import { createClient } from '../supabase/client';
-
-export interface BlogPost {
-  id: string;
-  title: string;
-  description: string;
-  content: string;
-  keywords: string[];
-  slug: string;
-  created_date: string;
-}
+import { createClient } from '@/backend/supabase/client';
+import { ResponseBlogPost } from '@/backend/types/types';
 
 export async function getAllBlogPosts() {
   const supabase = createClient();
@@ -23,7 +14,7 @@ export async function getAllBlogPosts() {
     return null;
   }
 
-  return data as BlogPost[];
+  return data as ResponseBlogPost[];
 }
 
 export async function getBlogPostBySlug(slug: string) {
@@ -36,5 +27,5 @@ export async function getBlogPostBySlug(slug: string) {
     return null;
   }
 
-  return data as BlogPost;
+  return data as ResponseBlogPost;
 }

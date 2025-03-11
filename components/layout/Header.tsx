@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import AddServerModal from '@/components/core/modals/AddServerModal';
 import Search from '@/components/layout/Search';
 import { Button } from '@/components/ui/button';
 
@@ -18,8 +19,6 @@ import {
   Server,
   X,
 } from 'lucide-react';
-
-import AddServerModal from '../core/modals/AddServerModal';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

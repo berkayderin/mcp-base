@@ -30,15 +30,15 @@ import { categories } from '@/data/categories';
 import { clsx } from 'clsx';
 import { Code, Github, Search, Star } from 'lucide-react';
 
-export default async function ServersPage({
-  searchParams,
-}: {
+interface ServersPageProps {
   searchParams: {
     page?: string;
     category?: string;
     search?: string;
   };
-}) {
+}
+
+export default async function ServersPage({ searchParams }: ServersPageProps) {
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
   const currentCategory = searchParams.category || 'All';
   const searchQuery = searchParams.search || '';
@@ -225,7 +225,6 @@ export default async function ServersPage({
         {totalPages > 1 && (
           <Pagination>
             <PaginationContent>
-              {/* Önceki Sayfa */}
               {currentPage > 1 && (
                 <PaginationItem>
                   <PaginationPrevious
@@ -236,7 +235,6 @@ export default async function ServersPage({
                 </PaginationItem>
               )}
 
-              {/* İlk Sayfa */}
               <PaginationItem>
                 <PaginationLink
                   href={`/servers?page=1${
@@ -248,14 +246,12 @@ export default async function ServersPage({
                 </PaginationLink>
               </PaginationItem>
 
-              {/* Sol Ellipsis */}
               {currentPage > 3 && (
                 <PaginationItem>
                   <PaginationEllipsis />
                 </PaginationItem>
               )}
 
-              {/* Orta Sayfalar */}
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter(
                   (pageNumber) =>
@@ -277,14 +273,12 @@ export default async function ServersPage({
                   </PaginationItem>
                 ))}
 
-              {/* Sağ Ellipsis */}
               {currentPage < totalPages - 2 && (
                 <PaginationItem>
                   <PaginationEllipsis />
                 </PaginationItem>
               )}
 
-              {/* Son Sayfa */}
               {totalPages > 1 && (
                 <PaginationItem>
                   <PaginationLink
@@ -298,7 +292,6 @@ export default async function ServersPage({
                 </PaginationItem>
               )}
 
-              {/* Sonraki Sayfa */}
               {currentPage < totalPages && (
                 <PaginationItem>
                   <PaginationNext

@@ -2,13 +2,18 @@
 
 import React from 'react';
 
-import type { BlogPost } from '@/backend/queries/blog';
+import type { ResponseBlogPost } from '@/backend/queries/blog';
 
 import { FaLinkedin, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
 
 type SharePlatform = 'twitter' | 'linkedin' | 'whatsapp';
 
-export default function ShareButtons({ post, shareUrl }: { post: BlogPost; shareUrl: string }) {
+interface ShareButtonsProps {
+  post: ResponseBlogPost;
+  shareUrl: string;
+}
+
+export default function ShareButtons({ post, shareUrl }: ShareButtonsProps) {
   const handleShare = (platform: SharePlatform) => {
     const text = encodeURIComponent(post.title);
     const url = encodeURIComponent(shareUrl);
@@ -23,7 +28,7 @@ export default function ShareButtons({ post, shareUrl }: { post: BlogPost; share
   };
 
   return (
-    <>
+    <div>
       <button
         onClick={() => handleShare('twitter')}
         className="rounded-full bg-black p-2 text-white transition-colors hover:bg-gray-800"
@@ -44,6 +49,6 @@ export default function ShareButtons({ post, shareUrl }: { post: BlogPost; share
       >
         <FaWhatsapp size={18} />
       </button>
-    </>
+    </div>
   );
 }

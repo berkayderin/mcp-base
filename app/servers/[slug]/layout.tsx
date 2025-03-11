@@ -21,12 +21,6 @@ export async function generateMetadata({
   return {
     title: `${server.name} | Model Context Protocol`,
     description: server.description || 'No description available',
-    openGraph: {
-      title: server.name,
-      description: server.description || 'No description available',
-      type: 'article',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/servers/${params.slug}`,
-    },
   };
 }
 

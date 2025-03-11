@@ -22,13 +22,6 @@ export async function generateMetadata({
     title: `${post.title} | Model Context Protocol`,
     description: post.description,
     keywords: post.keywords,
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      type: 'article',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${params.slug}`,
-      publishedTime: post.created_date,
-    },
   };
 }
 

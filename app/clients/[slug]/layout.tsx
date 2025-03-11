@@ -21,10 +21,6 @@ export async function generateMetadata({
   return {
     title: `${client.name} - MCP Client`,
     description: client.description || 'MCP client details',
-    openGraph: {
-      title: `${client.name} - MCP Client`,
-      description: client.description || 'MCP client details',
-    },
   };
 }
 

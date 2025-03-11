@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 
+import FaqItem from '@/components/core/home/FaqItem';
+
 import { faqs } from '@/data/faqs';
 
 import { TbLocationQuestion } from 'react-icons/tb';
-
-import FaqItem from './FaqItem';
 
 const Faqs = () => {
   const [openIndexColumn1, setOpenIndexColumn1] = useState<number | null>(null);

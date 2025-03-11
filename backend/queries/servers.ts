@@ -1,16 +1,5 @@
-import { createClient } from '../supabase/client';
-
-export interface ResponseServer {
-  id: number;
-  name: string;
-  html_url: string;
-  description: string | null;
-  language: string | null;
-  stars: number;
-  categories: string[] | null;
-  ai_analysis?: string | null;
-  slug: string;
-}
+import { createClient } from '@/backend/supabase/client';
+import { ResponseServer } from '@/backend/types/types';
 
 export async function getTopServers(limit: number = 10) {
   const supabase = createClient();

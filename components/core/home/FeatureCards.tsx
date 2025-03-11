@@ -4,14 +4,13 @@ import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import InfiniteMovingCards from '@/components/core/home/InfiniteMovingCards';
+
 import { getTopClients } from '@/backend/queries/clients';
 import { getTopServers } from '@/backend/queries/servers';
-
-import { Card } from '@/types/types';
+import { Card } from '@/backend/types/types';
 
 import { ArrowRight } from 'lucide-react';
-
-import InfiniteMovingCards from './InfiniteMovingCards';
 
 const FeatureCards = () => {
   const [topServers, setTopServers] = useState<Card[]>([]);

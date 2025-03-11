@@ -30,15 +30,15 @@ import { categories } from '@/data/categories';
 import { clsx } from 'clsx';
 import { Code, Github, Search, Star } from 'lucide-react';
 
-export default async function ClientsPage({
-  searchParams,
-}: {
+interface ClientsPageProps {
   searchParams: {
     page?: string;
     category?: string;
     search?: string;
   };
-}) {
+}
+
+export default async function ClientsPage({ searchParams }: ClientsPageProps) {
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
   const currentCategory = searchParams.category || 'All';
   const searchQuery = searchParams.search || '';
