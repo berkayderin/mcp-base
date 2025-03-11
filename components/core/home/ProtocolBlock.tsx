@@ -10,7 +10,7 @@ const ProtocolBlock = () => {
           $ mcp --version
         </AnimatedSpan>
         <AnimatedSpan delay={1500} className="text-slate-700">
-          Model Context Protocol v1.0.2 2024-11-05
+          Model Context Protocol 2024-11-05
         </AnimatedSpan>
         <AnimatedSpan delay={2000} className="text-emerald-700">
           $ mcp --info
