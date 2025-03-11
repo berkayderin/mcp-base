@@ -66,7 +66,7 @@ const FeatureCards = () => {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-orange-500"></div>
           </div>
         ) : topServers.length > 0 ? (
-          <InfiniteMovingCards items={topServers} direction="left" speed="slow" />
+          <InfiniteMovingCards items={topServers} direction="left" speed="slow" type="servers" />
         ) : (
           <div className="flex h-32 items-center justify-center text-gray-500">
             No servers found
@@ -90,7 +90,7 @@ const FeatureCards = () => {
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-orange-500"></div>
           </div>
         ) : topClients.length > 0 ? (
-          <InfiniteMovingCards items={topClients} direction="right" speed="slow" />
+          <InfiniteMovingCards items={topClients} direction="right" speed="slow" type="clients" />
         ) : (
           <div className="flex h-32 items-center justify-center text-gray-500">
             No clients found

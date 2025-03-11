@@ -14,12 +14,14 @@ const InfiniteMovingCards = ({
   speed = 'fast',
   pauseOnHover = true,
   className,
+  type = 'servers',
 }: {
   items: Card[];
   direction?: 'left' | 'right';
   speed?: 'slow' | 'medium' | 'fast';
   pauseOnHover?: boolean;
   className?: string;
+  type?: 'servers' | 'clients';
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLUListElement>(null);
@@ -122,7 +124,7 @@ const InfiniteMovingCards = ({
                 ))}
               </div>
             )}
-            <Link href={`/servers/${item.slug}`} className="absolute inset-0 z-10"></Link>
+            <Link href={`/${type}/${item.slug}`} className="absolute inset-0 z-10"></Link>
           </li>
         ))}
       </ul>
