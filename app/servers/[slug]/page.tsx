@@ -53,11 +53,9 @@ export default async function ServerDetailPage({
 	let analysisData: AnalysisData | null = null
 	try {
 		if (server.ai_analysis) {
-			// Doğrudan JSON olarak parse etmeyi dene
 			try {
 				analysisData = JSON.parse(server.ai_analysis)
 			} catch {
-				// Eğer doğrudan parse edemezse, markdown içinden JSON'u çıkar
 				const markdownContent = server.ai_analysis
 				const jsonMatch = markdownContent.match(
 					/```(?:json)?\s*(\{[\s\S]*?\})\s*```/
