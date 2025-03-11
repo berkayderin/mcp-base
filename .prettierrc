@@ -10,6 +10,7 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "importOrder": [
+    "^.+\\.(css|scss|sass)$",
     "^(react/(.*)$)|^(react$)|^(react-dom(.*)$)",
     "^(next/(.*)$)|^(next$)",
     "^@app/(.*)$",

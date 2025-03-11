@@ -1,3 +1,5 @@
+import './globals.css';
+
 import type { Metadata } from 'next';
 import { IBM_Plex_Sans } from 'next/font/google';
 
@@ -5,7 +7,6 @@ import ScrollToTop from '@/components/core/home/ScrollToTop';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 
-import './globals.css';
 import SupabaseProvider from './providers';
 
 const ibmPlexSans = IBM_Plex_Sans({

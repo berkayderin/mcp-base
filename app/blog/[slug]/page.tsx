@@ -1,3 +1,5 @@
+import './blog.css';
+
 import React from 'react';
 
 import Link from 'next/link';
@@ -13,8 +15,6 @@ import { estimateReadingTime } from '@/helpers/estimateReadingTime';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import Marked from 'marked-react';
 import { FaBookReader, FaCalendarAlt } from 'react-icons/fa';
-
-import './blog.css';
 
 async function BlogDetailPage({ params }: { params: { slug: string } }) {
   const post = await getBlogPostBySlug(params.slug);
